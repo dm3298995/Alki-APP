@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ALKI Panel</title>
+  <meta name="description" content="Panel interno del equipo de ALKI Rentals: incidencias, viviendas, cobros, costes y beneficio.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#062637">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ALKI Panel">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/panel.css">
+</head>
+<body class="cuerpo-panel">
+  <!-- ALKI Panel: herramienta interna del equipo (no es la app de inquilinos) -->
+  <div id="app"></div>
+  <div id="modal-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript>El panel necesita JavaScript activado.</noscript>
+
+  <!-- Datos y lógica compartidos con la app de inquilinos -->
+  <script src="js/demo-csv.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/views/legal.js"></script>
+  <script src="js/views/comunes.js"></script>
+  <script src="js/views/inquilino.js"></script>
+  <script src="js/views/admin.js"></script>
+  <script src="js/views/social.js"></script>
+  <!-- Propio del panel -->
+  <script src="js/panel/equipo.js"></script>
+  <script src="js/panel/costes.js"></script>
+  <script src="js/panel/vistas.js"></script>
+  <script src="js/panel/app.js"></script>
+</body>
+</html>
