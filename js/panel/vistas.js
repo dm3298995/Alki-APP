@@ -38,7 +38,8 @@ Alki.panel = Alki.panel || {};
         function pasoCorreo() {
           pintar('<h1>Panel del equipo</h1><form novalidate><div class="campo"><label for="email">Correo de trabajo</label>' +
             '<input id="email" type="email" autocomplete="username" value="' + esc(correo) + '"></div>' +
-            '<p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">Continuar</button></form>', function () {
+            '<p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">Continuar</button></form>' +
+            (Alki.config && Alki.config.modoPrueba ? '<p class="pista-prueba">Demostración: entra con <b>daniel@alki.casa</b> y crea tu contraseña la primera vez.</p>' : ''), function () {
             caja.querySelector('form').addEventListener('submit', function (e) {
               e.preventDefault();
               correo = caja.querySelector('#email').value.trim();

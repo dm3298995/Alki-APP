@@ -61,7 +61,8 @@ Alki.vistas.login = function () {
         pintar('<h1>Entra en tu cuenta</h1>' +
           '<form novalidate><div class="campo"><label for="email">Correo</label>' +
           '<input id="email" type="email" autocomplete="username" required value="' + esc(correo) + '" placeholder="tu@correo.com"></div>' +
-          '<p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">Continuar</button></form>',
+          '<p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">Continuar</button></form>' +
+          (Alki.config && Alki.config.modoPrueba ? '<p class="pista-prueba">¿Vienes a probarla? Entra con <b>lucia@demo.alki</b> (la primera vez eliges tu contraseña) o usa «Probar con otro perfil» más abajo.</p>' : ''),
           function () {
             caja.querySelector('form').addEventListener('submit', function (e) {
               e.preventDefault();

@@ -55,6 +55,9 @@ Alki.panel = Alki.panel || {};
         superadmin: true, activo: true, permisos: Object.assign({}, perfiles.total.permisos), clave: null, creado: new Date().toISOString()
       }];
     }
+    // Versión anterior: el encargado tenía otro correo. Se cambia al de la demo.
+    const viejo = db.equipo.find((m) => m.id === 'eq-encargado' && m.email !== 'daniel@alki.casa');
+    if (viejo) { viejo.email = 'daniel@alki.casa'; viejo.nombre = 'Daniel (encargado)'; }
     db.actividad = db.actividad || [];
     db.costes = db.costes || [];
     S.guardar();
