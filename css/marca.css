@@ -1,0 +1,190 @@
+/* ==========================================================================
+   marca.css — BRAND BOOK DE ALKI APLICADO AL PANEL DEL EQUIPO
+   Se carga después de styles.css y panel.css, solo en panel.html.
+   Tokens del sistema de diseño «ALKI Rentals»:
+     · Superficies: Blanco Cal #FAF8F4, blanco #FFF, celeste suave #E8F0FF
+     · Tinta #111418, Profundo #16325C (títulos, barra y botones oscuros)
+     · Celeste #91B6FF: fondos y acentos, NUNCA como color de texto sobre claro.
+       Sobre celeste el texto va en Profundo, nunca en blanco.
+     · Plus Jakarta Sans (títulos) + Inter (texto)
+     · Todo lo que se pulsa es una píldora. Sombras suaves teñidas de azul.
+   ========================================================================== */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('../assets/fonts/jakarta.woff2') format('woff2');
+  font-weight: 200 800; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/inter.woff2') format('woff2');
+  font-weight: 100 900; font-display: swap;
+}
+
+.cuerpo-panel {
+  /* Se reasignan las variables de la app a los tokens de la marca */
+  --tinta: #16325C;            /* ink-strong (Profundo) */
+  --tinta-base: #111418;       /* ink */
+  --tinta-suave: #5B6270;      /* ink-muted */
+  --celeste: #91B6FF;          /* brand */
+  --celeste-claro: #E8F0FF;    /* brand-soft / surface-soft */
+  --arena: #E9DFD1;            /* surface-warm */
+  --fondo: #FAF8F4;            /* surface (Blanco Cal) */
+  --papel: #FFFFFF;            /* surface-raised */
+  --linea: #DCE3EE;
+  --linea-fuerte: #7C8699;
+  --azul: #16325C;             /* enlaces en Profundo (el celeste no se usa como texto) */
+
+  --ok: #22663F;    --ok-fondo: #E3F2E8;
+  --aviso: #8A5300; --aviso-fondo: #FBEFD9;
+  --mal: #A3322A;   --mal-fondo: #FBE5E2;
+  --info: #16325C;  --info-fondo: #E8F0FF;
+  --neutro: #5B6270; --neutro-fondo: #EDEBE6;
+
+  --titulos: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --texto: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radio: 24px;               /* radius-lg para tarjetas */
+  --radio-md: 16px;
+  --sombra-s: 0 2px 8px rgba(22, 50, 92, .08);
+  --sombra-m: 0 12px 32px rgba(22, 50, 92, .12);
+  --sombra-l: 0 30px 70px rgba(22, 50, 92, .18);
+
+  background: var(--fondo);
+  color: var(--tinta-base);
+}
+.cuerpo-panel h1, .cuerpo-panel h2, .cuerpo-panel h3 { color: var(--tinta); font-weight: 600; letter-spacing: -0.02em; }
+.cuerpo-panel a { color: var(--tinta); text-underline-offset: 3px; }
+.cuerpo-panel :focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; box-shadow: 0 0 0 2px var(--fondo); }
+
+/* ---------- Barra superior: Profundo con el logo en negativo ---------- */
+.cuerpo-panel .pa__cabecera { background: var(--tinta); box-shadow: var(--sombra-m); padding-top: calc(12px + env(safe-area-inset-top)); padding-bottom: 12px; }
+.cuerpo-panel .pa__logo { font-weight: 600; }
+.cuerpo-panel .pa__logo b { color: var(--celeste); font-weight: 400; }
+.cuerpo-panel .pa__nav { gap: 4px; }
+.cuerpo-panel .pa__nav a { border-radius: 9999px; padding: 8px 14px; color: rgba(250, 248, 244, .78); font-weight: 500; font-size: .875rem; }
+.cuerpo-panel .pa__nav a:hover { background: rgba(145, 182, 255, .16); color: #FAF8F4; }
+.cuerpo-panel .pa__nav a[aria-current="page"] { background: var(--celeste); color: var(--tinta); font-weight: 600; }
+.cuerpo-panel .pa__usuario { color: #FAF8F4; font-weight: 500; }
+.cuerpo-panel .pa__usuario .avatar { background: var(--celeste); color: var(--tinta); }
+.cuerpo-panel .pa__main { padding-top: 36px; }
+
+/* ---------- Cabecera de cada pantalla: antetítulo + título ---------- */
+.cuerpo-panel .cabecera { margin-bottom: 28px; }
+.cuerpo-panel .cabecera h1 { font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 600; letter-spacing: -0.025em; }
+.cuerpo-panel .cabecera__sub { color: var(--tinta-suave); font-size: 1rem; }
+/* Antetítulo de la marca: mayúsculas con punto celeste */
+.antetitulo { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--texto); font-size: .8125rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-suave); }
+.antetitulo::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--celeste); flex: none; }
+
+.cuerpo-panel .seccion { margin-top: 36px; }
+.cuerpo-panel .seccion h2 { font-size: 1.25rem; font-weight: 600; }
+.cuerpo-panel .seccion__cab a { color: var(--tinta); }
+
+/* ---------- Superficies: tarjetas blancas, borde fino y sombra suave ---------- */
+.cuerpo-panel .panel,
+.cuerpo-panel .lista,
+.cuerpo-panel .tabla-scroll,
+.cuerpo-panel .cifras { border-color: var(--linea); border-radius: var(--radio); box-shadow: var(--sombra-s); }
+.cuerpo-panel .panel { padding: 22px; }
+.cuerpo-panel .vacio { border-radius: var(--radio); background: transparent; border-color: var(--linea-fuerte); border-style: dashed; }
+.cuerpo-panel .fila:hover { background: #FBFCFF; }
+.cuerpo-panel .fila__icono { background: var(--celeste-claro); color: var(--tinta); border-radius: 9999px; }
+
+/* Cifras: números grandes en Plus Jakarta ligera, como el «display» de la marca */
+.cuerpo-panel .cifras strong { font-weight: 500; font-size: 2.1rem; letter-spacing: -0.03em; color: var(--tinta); }
+.cuerpo-panel .cifras span { font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-suave); }
+.cuerpo-panel .cifras > div { padding: 20px 22px; }
+
+/* Tablas */
+.cuerpo-panel .tabla th { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-suave); background: #FBFAF7; }
+.cuerpo-panel .tabla thead th:first-child { border-top-left-radius: var(--radio); }
+.cuerpo-panel .tabla thead th:last-child { border-top-right-radius: var(--radio); }
+.cuerpo-panel .tabla tbody tr:hover td { background: #FBFCFF; }
+
+/* ---------- Botones: siempre píldora ---------- */
+.cuerpo-panel .boton { border-radius: 9999px; padding: 11px 22px; font-weight: 600; background: var(--tinta); color: #FAF8F4; border: 1.5px solid var(--tinta); box-shadow: none; transition: background .15s, box-shadow .15s, transform .15s; }
+.cuerpo-panel .boton:hover { background: #0F223F; box-shadow: var(--sombra-s); }
+/* Principal de la marca: celeste con texto Profundo */
+.cuerpo-panel .boton--marca { background: var(--celeste); border-color: var(--celeste); color: var(--tinta); }
+.cuerpo-panel .boton--marca:hover { background: #7FA7F5; }
+/* Silencioso: transparente con borde */
+.cuerpo-panel .boton--sec { background: transparent; color: var(--tinta); border-color: var(--linea-fuerte); }
+.cuerpo-panel .boton--sec:hover { background: var(--celeste-claro); border-color: var(--tinta); }
+.cuerpo-panel .boton--peq { padding: 7px 14px; border-radius: 9999px; font-size: .8125rem; }
+.cuerpo-panel .boton--peligro { background: transparent; color: var(--mal); border-color: #E3B3AE; }
+.cuerpo-panel .boton-icono { border-radius: 9999px; color: var(--tinta); }
+
+/* Campos de formulario */
+.cuerpo-panel input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+.cuerpo-panel select, .cuerpo-panel textarea { border-radius: var(--radio-md); border-color: var(--linea); background: #fff; }
+.cuerpo-panel input:focus, .cuerpo-panel select:focus, .cuerpo-panel textarea:focus { border-color: var(--tinta); box-shadow: 0 0 0 3px var(--celeste-claro); outline: none; }
+.cuerpo-panel .controles select { border-radius: 9999px; padding: 8px 16px; }
+.cuerpo-panel .campo > label { color: var(--tinta); font-weight: 600; }
+
+/* Filtros en píldora: activo en Profundo */
+.cuerpo-panel .chips span, .cuerpo-panel .chips--filtro a { border-radius: 9999px; border-color: var(--linea); background: #fff; color: var(--tinta); font-weight: 500; }
+.cuerpo-panel .chips input:checked + span,
+.cuerpo-panel .chips--filtro a[aria-current="true"] { background: var(--tinta); border-color: var(--tinta); color: #FAF8F4; }
+
+/* Etiquetas de estado: píldoras suaves con punto */
+.cuerpo-panel .etiqueta { border-radius: 9999px; font-weight: 600; letter-spacing: .01em; }
+.cuerpo-panel .etiqueta--info { color: var(--tinta); background: var(--celeste-claro); }
+.cuerpo-panel .etiqueta--info::before { background: var(--celeste); }
+
+/* Barras de progreso */
+.cuerpo-panel .panel .barra { background: var(--celeste-claro); border-radius: 9999px; }
+.cuerpo-panel .panel .barra i { background: var(--celeste); border-radius: 9999px; }
+
+/* ---------- Tablero de incidencias ---------- */
+.cuerpo-panel .tablero__col { background: #F1EDE6; border-radius: var(--radio); padding: 14px; }
+.cuerpo-panel .tablero__col h2 { font-size: .8125rem; letter-spacing: .12em; text-transform: uppercase; font-family: var(--texto); font-weight: 600; }
+.cuerpo-panel .tablero__col h2 span { background: #fff; border-radius: 9999px; padding: 0 9px; color: var(--tinta); }
+.cuerpo-panel .tarjeta-inc { border-radius: var(--radio-md); border: 1px solid var(--linea); border-left-width: 4px; box-shadow: var(--sombra-s); transition: box-shadow .15s, transform .15s; }
+.cuerpo-panel .tarjeta-inc:hover { box-shadow: var(--sombra-m); transform: translateY(-1px); border-color: var(--linea); }
+.cuerpo-panel .tarjeta-inc--media { border-left-color: var(--celeste); }
+.cuerpo-panel .tarjeta-inc--alta { border-left-color: #E2A33C; }
+.cuerpo-panel .tarjeta-inc--urgente { border-left-color: var(--mal); }
+.cuerpo-panel .tarjeta-inc__titulo { color: var(--tinta); font-weight: 600; }
+
+/* ---------- Permisos ---------- */
+.cuerpo-panel .matriz select { border-radius: 9999px; padding: 6px 12px; }
+.cuerpo-panel .nivel--ver { background: var(--celeste-claro); color: var(--tinta); border-color: #C6D8FF; }
+.cuerpo-panel .nivel--editar { background: var(--ok-fondo); color: var(--ok); border-color: #BFE0CD; }
+.cuerpo-panel .nivel--no { background: var(--neutro-fondo); color: var(--neutro); border-color: #DCD7CD; }
+
+/* ---------- Gráficas de beneficio ---------- */
+.cuerpo-panel .grafica__fila:hover { background: var(--celeste-claro); }
+.cuerpo-panel .grafica__barra { background: var(--tinta); border-radius: 0 9999px 9999px 0; }
+.cuerpo-panel .grafica__barra--neg { background: var(--mal); border-radius: 9999px 0 0 9999px; }
+.cuerpo-panel .desglose__pista { background: var(--celeste-claro); }
+.cuerpo-panel .desglose__pista i { background: var(--tinta); border-radius: 9999px; }
+
+/* ---------- Calculadora: tarjeta Profundo con la cifra en display ---------- */
+.cuerpo-panel .calc__resultado { background: var(--tinta); border-radius: var(--radio); padding: 26px; box-shadow: var(--sombra-l); }
+.cuerpo-panel .calc__cifra { font-weight: 300; font-size: 3rem; letter-spacing: -0.04em; }
+.cuerpo-panel .calc__resultado .positivo { color: #A9E8C2; }
+.cuerpo-panel .calc__resultado .negativo { color: #FFB1A8; }
+.cuerpo-panel .calc__resultado .antetitulo { color: rgba(250, 248, 244, .7); }
+
+/* ---------- Ventanas, avisos y avatares ---------- */
+.cuerpo-panel .modal { border-radius: 32px 32px 0 0; box-shadow: var(--sombra-l); }
+@media (min-width: 700px) { .cuerpo-panel .modal { border-radius: 32px; } }
+.cuerpo-panel .modal-fondo { background: rgba(15, 34, 63, .45); }
+.cuerpo-panel .toast { border-radius: 9999px; background: var(--tinta); color: #FAF8F4; box-shadow: var(--sombra-m); }
+.cuerpo-panel .avatar { background: var(--celeste-claro); color: var(--tinta); font-family: var(--titulos); font-weight: 600; }
+
+/* ---------- Bienvenida del panel: franja con el lema ---------- */
+.bienvenida { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 28px 30px; margin-bottom: 28px; border-radius: 32px; background: var(--tinta); color: #FAF8F4; box-shadow: var(--sombra-m); }
+.bienvenida::after { content: ''; position: absolute; right: -60px; top: -80px; width: 260px; height: 260px; border-radius: 50%; border: 36px solid rgba(145, 182, 255, .18); pointer-events: none; }
+.bienvenida h1 { color: #FAF8F4 !important; font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 300 !important; letter-spacing: -0.03em; }
+.bienvenida h1 strong { font-weight: 600; }
+.bienvenida p { color: rgba(250, 248, 244, .78); margin-top: 6px; }
+.bienvenida .antetitulo { color: rgba(250, 248, 244, .7); }
+.bienvenida__lema { font-family: var(--titulos); font-style: italic; color: var(--celeste); font-size: .95rem; position: relative; z-index: 1; }
+.cuerpo-panel h1[tabindex="-1"]:focus { outline: none; box-shadow: none; }
+/* El logo de la barra va en negativo (Blanco Cal y celeste) */
+.cuerpo-panel .pa__logo, .cuerpo-panel .pa__logo span { color: #FAF8F4; }
+@media (max-width: 520px) {
+  .cuerpo-panel .cifras strong { font-size: 1.55rem; white-space: nowrap; }
+  .cuerpo-panel .cifras span { letter-spacing: .05em; font-size: .72rem; }
+  .bienvenida { padding: 22px; border-radius: 24px; }
+}

@@ -13,7 +13,7 @@ Alki.panel = Alki.panel || {};
   const esc = U.esc, ic = U.icono;
   const A = () => Alki.vistas.admin;
   const niveles = { no: 'Sin acceso', ver: 'Solo ver', editar: 'Editar' };
-  const iniciales = (n) => String(n || '?').split(' ').slice(0, 2).map((x) => x.charAt(0)).join('').toUpperCase();
+  const iniciales = (n) => String(n || '?').replace(/\(.*?\)/g, '').trim().split(/\s+/).slice(0, 2).map((x) => x.charAt(0)).join('').toUpperCase();
   const puede = (ses, s, nivel) => { const p = E.permiso(ses, s); return nivel === 'editar' ? p === 'editar' : p !== 'no'; };
   const activos = () => (S.db.equipo || []).filter((m) => m.activo);
 
@@ -107,7 +107,7 @@ Alki.panel = Alki.panel || {};
     const item = (seccion, ruta, icono, titulo, meta, valor) => puede(ses, seccion) ? '<li><a class="fila" href="#' + ruta + '"><span class="fila__icono">' + ic(icono) + '</span><span class="fila__principal"><span class="fila__titulo">' + titulo + '</span><span class="fila__meta">' + meta + '</span></span>' + (valor || ic('flecha')) + '</a></li>' : '';
     const atencion = [
       revision.length ? item('cobros', '/admin/cobros?f=revision', 'pagos', revision.length + ' pagos por confirmar', 'Inquilinos que han avisado de que han pagado') : '',
-      urgentes.length ? item('incidencias', '/admin/incidencias', 'incidencias', urgentes.length + ' incidencias urgentes o de prioridad alta', 'Sin resolver') : '',
+      urgentes.length ? item('incidencias', '/admin/incidencias', 'incidencias', urgentes.length + (urgentes.length === 1 ? ' incidencia urgente o de prioridad alta' : ' incidencias urgentes o de prioridad alta'), 'Sin resolver') : '',
       sinAsignar.length ? item('incidencias', '/admin/incidencias?f=sinasignar', 'usuario', sinAsignar.length + ' incidencias sin responsable', 'Asígnalas a alguien del equipo') : '',
       solicitudes.length ? item('personas', '/admin/personas?f=revisar', 'calendario', solicitudes.length + ' solicitudes de inquilinos', 'Renovaciones, salidas o datos que no cuadran') : '',
       k.vencido ? item('cobros', '/admin/cobros?f=vencidos', 'pagos', 'Recibos vencidos', 'Pendientes de cobro', '<span class="fila__importe negativo">' + U.euro(k.vencido) + '</span>') : '',
@@ -118,7 +118,11 @@ Alki.panel = Alki.panel || {};
     const actividad = ses.superadmin ? (db.actividad || []).slice(0, 8) : [];
     return {
       titulo: 'Resumen',
-      html: U.cabecera('Hola, ' + U.primerNombre(ses.nombre), { subtitulo: U.fecha(Alki.fechas.fecha(new Date()), true) + (db.origen === 'real' ? ' · datos reales de ALKI' : ' · datos de demostración') }) +
+      // Franja de bienvenida con los colores y el lema de la marca
+      html: '<header class="bienvenida"><div><p class="antetitulo">ALKI Panel · ' + esc(U.fecha(Alki.fechas.fecha(new Date()), true)) + '</p>' +
+          '<h1>Hola, <strong>' + esc(U.primerNombre(ses.nombre)) + '</strong></h1>' +
+          '<p>' + (misInc.length ? 'Tienes ' + misInc.length + ' incidencia' + (misInc.length === 1 ? '' : 's') + ' asignada' + (misInc.length === 1 ? '' : 's') + '.' : 'Esto es lo que pasa hoy en los pisos.') + (db.origen === 'real' ? ' Datos reales de ALKI.' : ' Datos de demostración.') + '</p></div>' +
+          '<p class="bienvenida__lema">«Más que un contrato, una familia»</p></header>' +
         '<div class="cifras">' +
           '<div><strong>' + k.ocupacion + ' %</strong><span>Ocupación · ' + k.libres + ' libres</span></div>' +
           '<div><strong>' + k.incidenciasAbiertas + '</strong><span>Incidencias abiertas</span></div>' +

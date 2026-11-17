@@ -50,7 +50,7 @@ Alki.app = (function () {
   }
 
   function shell(ses, activa, html) {
-    const iniciales = ses.nombre.split(' ').slice(0, 2).map((x) => x.charAt(0)).join('').toUpperCase();
+    const iniciales = ses.nombre.replace(/\(.*?\)/g, '').trim().split(/\s+/).slice(0, 2).map((x) => x.charAt(0)).join('').toUpperCase(); // sin «(encargado)»
     const nav = E.secciones.filter((s) => E.permiso(ses, s[0]) !== 'no').map((s) =>
       '<a href="#' + s[3] + '"' + (s[0] === activa ? ' aria-current="page"' : '') + ' title="' + s[1] + '">' + U.icono(s[2]) + '<span>' + (s[5] || s[1]) + '</span></a>').join('');
     return '<div class="pa">' +
@@ -99,6 +99,15 @@ Alki.app = (function () {
     const app = document.getElementById('app');
     app.innerHTML = seccion ? shell(ses, seccion, vista.html) : vista.html;
     document.title = (vista.titulo ? vista.titulo + ' | ' : '') + 'ALKI Panel';
+    // Antetítulo de la marca (mayúsculas con punto celeste) encima del título de cada pantalla
+    const sec = seccion && seccion !== '*' ? E.secciones.find((x) => x[0] === seccion) : null;
+    const cab = app.querySelector('.pa__pagina .cabecera__fila > div');
+    if (sec && cab && !app.querySelector('.pa__pagina .antetitulo')) {
+      const ante = document.createElement('p');
+      ante.className = 'antetitulo';
+      ante.textContent = 'ALKI Panel · ' + sec[1];
+      cab.prepend(ante);
+    }
     if (vista.montar) vista.montar(app);
     if (nivel === 'ver') soloLectura(app);
     U.fotos.pintar(app);

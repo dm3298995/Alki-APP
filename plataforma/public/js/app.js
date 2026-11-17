@@ -115,6 +115,15 @@ async function navegar() {
     const nodo = document.createElement('div');
     await destino[1](nodo, { params, query, ctx, recargar: navegar });
     if (n !== navegando) return; // el usuario ya ha cambiado de página
+    // Antetítulo de la marca (mayúsculas con punto celeste) encima del título de la pantalla
+    const h1 = nodo.querySelector('.cabecera h1');
+    const apartado = MENU.find((m) => m[0] === raiz);
+    if (h1 && !nodo.querySelector('.antetitulo')) {
+      const ante = document.createElement('p');
+      ante.className = 'antetitulo';
+      ante.textContent = 'ALKI Gestión · ' + (apartado ? apartado[1] : 'Mi cuenta');
+      h1.before(ante);
+    }
     cont.replaceChildren(nodo);
     if (raiz === 'incidencias' || raiz === '') actualizarInsignia();
     window.scrollTo(0, 0);

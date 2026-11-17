@@ -4,39 +4,46 @@
    un solo color de acento (azul ALKI) y colores de estado solo donde hay que
    llamar la atención (vencido, libre pronto...). Siempre acompañados de texto.
    ========================================================================== */
-@font-face { font-family: 'Bricolage Grotesque'; src: url('../fuentes/bricolage.woff2') format('woff2'); font-weight: 200 800; font-display: swap; }
-@font-face { font-family: 'Figtree'; src: url('../fuentes/figtree.woff2') format('woff2'); font-weight: 300 900; font-display: swap; }
+/* Tipografías del brand book de ALKI, alojadas aquí mismo (la CSP no permite fuentes externas) */
+@font-face { font-family: 'Plus Jakarta Sans'; src: url('../fuentes/jakarta.woff2') format('woff2'); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('../fuentes/inter.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
 
 :root {
-  --tinta: #062637;
-  --tinta-2: #3F5666;
-  --tinta-3: #6B7F8C;
-  --celeste: #91B6FF;
-  --celeste-claro: #EEF3FF;
-  --acento: #2E5BC6;
-  --acento-oscuro: #1F4396;
-  --fondo: #F4F7FB;
+  /* Tokens del sistema de diseño «ALKI Rentals» (brand book) */
+  --tinta: #16325C;          /* ink-strong · Profundo */
+  --tinta-2: #3A4250;
+  --tinta-3: #5B6270;        /* ink-muted */
+  --celeste: #91B6FF;        /* brand: fondos y acentos, nunca texto sobre claro */
+  --celeste-claro: #E8F0FF;  /* brand-soft */
+  --acento: #16325C;         /* enlaces e interactivos en Profundo */
+  --acento-oscuro: #0F223F;
+  --fondo: #FAF8F4;          /* Blanco Cal */
   --papel: #FFFFFF;
-  --linea: #E1E7F0;
-  --linea-2: #EEF2F7;
+  --arena: #E9DFD1;          /* surface-warm */
+  --linea: #DCE3EE;
+  --linea-2: #EEF1F5;
+  --linea-fuerte: #7C8699;
+  --sombra-s: 0 2px 8px rgba(22, 50, 92, .08);
+  --sombra-m: 0 12px 32px rgba(22, 50, 92, .12);
+  --sombra-l: 0 30px 70px rgba(22, 50, 92, .18);
 
   /* Estados (siempre con texto o icono, nunca solo color) */
-  --ok: #1E7B45;       --ok-fondo: #E4F4EA;
-  --aviso: #8A5A00;    --aviso-fondo: #FDF1D8;
+  --ok: #22663F;       --ok-fondo: #E3F2E8;
+  --aviso: #8A5300;    --aviso-fondo: #FBEFD9;
   --serio: #A4471C;    --serio-fondo: #FCE9DF;
   --critico: #B42828;  --critico-fondo: #FBE4E4;
-  --info: #2E5BC6;     --info-fondo: #E8EEFC;
-  --neutro: #4A6476;   --neutro-fondo: #EDF2F5;
+  --info: #16325C;     --info-fondo: #E8F0FF;
+  --neutro: #5B6270;   --neutro-fondo: #EDEBE6;
 
   /* Gráficos (paleta validada para daltonismo) */
   --serie-1: #2a78d6; --serie-2: #eb6834; --serie-3: #1baf7a; --serie-4: #eda100; --serie-5: #e87ba4;
   --g-bueno: #0ca30c; --g-aviso: #fab219; --g-serio: #ec835a; --g-critico: #d03b3b;
   --g-rejilla: #E8EDF3; --g-eje: #8A9AA6;
 
-  --titulos: 'Bricolage Grotesque', 'Trebuchet MS', system-ui, sans-serif;
-  --texto: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --radio: 14px;
-  --radio-s: 9px;
+  --titulos: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --texto: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radio: 24px;
+  --radio-s: 16px;
   --lateral: 248px;
 }
 
@@ -384,3 +391,82 @@ tfoot td { font-weight: 700; border-top: 1px solid var(--linea); }
   .lateral, .barra-movil, .acciones, .filtros, .pestanas { display: none !important; }
   .marco { display: block; }
 }
+
+/* ==========================================================================
+   CAPA DE MARCA — brand book «ALKI Rentals»
+   Superficie Blanco Cal, Profundo para títulos y la barra lateral, celeste
+   solo de fondo/acento (texto encima siempre en Profundo), todo lo pulsable
+   en píldora, tarjetas con radio 24 y sombras suaves teñidas de azul.
+   ========================================================================== */
+body { color: #111418; }
+h1, h2, h3 { color: var(--tinta); font-weight: 600; letter-spacing: -0.02em; }
+h1 { font-size: clamp(26px, 3vw, 36px); letter-spacing: -0.025em; }
+h2 { font-size: 19px; }
+:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; box-shadow: 0 0 0 2px var(--fondo); }
+#contenido:focus, h1:focus { outline: none; box-shadow: none; }
+
+/* Antetítulo: mayúsculas con punto celeste */
+.antetitulo { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 12.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-3); }
+.antetitulo::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--celeste); flex: none; }
+
+/* Barra lateral en Profundo; la opción activa en celeste con texto Profundo */
+.lateral { background: var(--tinta); color: #DCE6F7; }
+.marca strong { font-weight: 600; color: #FAF8F4; }
+.marca span { color: var(--celeste); }
+.menu a { border-radius: 9999px; padding: 9px 14px; color: rgba(250, 248, 244, .78); font-weight: 500; }
+.menu a:hover { background: rgba(145, 182, 255, .16); color: #FAF8F4; }
+.menu a[aria-current='page'] { background: var(--celeste); color: var(--tinta); font-weight: 600; }
+.menu .seccion { color: rgba(145, 182, 255, .85); letter-spacing: .12em; }
+.usuario-lateral { border-top-color: rgba(250, 248, 244, .12); }
+.usuario-lateral b { color: #FAF8F4; }
+
+/* Tarjetas y cifras */
+.tarjeta, .cifra { border-color: var(--linea); box-shadow: var(--sombra-s); }
+.tarjeta { padding: 22px 24px; }
+a.cifra { transition: box-shadow .15s, transform .15s; }
+a.cifra:hover { box-shadow: var(--sombra-m); transform: translateY(-1px); border-color: var(--linea); }
+.cifra { padding: 18px 20px; }
+.cifra .etq { font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); }
+.cifra .valor { font-weight: 500; letter-spacing: -0.03em; color: var(--tinta); }
+.cifra.destacada { border-color: #F2D2B8; background: #FFFAF5; }
+
+/* Botones en píldora: primario Profundo, «marca» celeste, el resto silencioso */
+.boton { border-radius: 9999px; padding: 9px 18px; border: 1.5px solid var(--linea-fuerte); background: transparent; color: var(--tinta); font-weight: 600; transition: background .15s, box-shadow .15s; }
+.boton:hover { background: var(--celeste-claro); border-color: var(--tinta); }
+.boton.primario { background: var(--tinta); border-color: var(--tinta); color: #FAF8F4; }
+.boton.primario:hover { background: var(--acento-oscuro); box-shadow: var(--sombra-s); }
+.boton.marca-b { background: var(--celeste); border-color: var(--celeste); color: var(--tinta); }
+.boton.peligro { border-color: #E3B3AE; }
+.boton.mini { border-radius: 9999px; padding: 4px 12px; }
+
+/* Pestañas internas: píldoras */
+.pestanas { border-bottom: 0; gap: 6px; }
+.pestanas a, .pestanas button { border: 1.5px solid var(--linea); border-radius: 9999px; margin-bottom: 0; padding: 7px 16px; background: #fff; color: var(--tinta); font-weight: 500; }
+.pestanas [aria-current='true'] { background: var(--tinta); border-color: var(--tinta); color: #FAF8F4; }
+.pestanas [aria-current='true'] .cuenta { background: rgba(250, 248, 244, .2); color: #FAF8F4; }
+
+/* Campos */
+input[type='text'], input[type='email'], input[type='password'], input[type='number'], input[type='date'], input[type='month'], input[type='search'], input[type='url'], select, textarea { border-radius: 16px; border-color: var(--linea); }
+.filtros select, .filtros input { border-radius: 9999px; padding: 7px 14px; }
+input:focus, select:focus, textarea:focus { border-color: var(--tinta); outline: 3px solid var(--celeste-claro); }
+.campo > span { color: var(--tinta); }
+
+/* Tablas: cabecera en versalitas suaves */
+th { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); font-weight: 600; }
+tbody tr:hover td { background: #FBFCFF; }
+
+/* Etiquetas */
+.chip.info { background: var(--celeste-claro); color: var(--tinta); }
+.chip.info::before { background: var(--celeste); }
+
+/* Selección masiva de cobros: barra Profundo */
+.barra-seleccion { border-radius: 24px; box-shadow: var(--sombra-l); }
+
+/* Acceso: tarjeta blanca grande sobre Blanco Cal, con el lema */
+.acceso { background: radial-gradient(900px 420px at 50% -10%, #E8F0FF, transparent), var(--fondo); }
+.acceso .caja { border-radius: 32px; box-shadow: var(--sombra-l); border-color: var(--linea); padding: 36px 32px; }
+.acceso .caja::after { content: '«Más que un contrato, una familia»'; display: block; margin-top: 22px; text-align: center; font-family: var(--titulos); font-style: italic; font-size: 13px; color: var(--tinta-3); }
+
+/* Tablero de incidencias: columnas en tono cálido de la marca */
+.columna { background: #F1EDE6; }
+.columna > header h2 { font-family: var(--texto); font-size: 12.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
