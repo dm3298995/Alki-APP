@@ -90,7 +90,7 @@ Alki.vistas = Alki.vistas || {};
     return {
       titulo: 'Inicio',
       html:
-        '<header class="cabecera"><h1>Hola, ' + esc(U.primerNombre(i.nombre)) + '</h1></header>' +
+        '<header class="cabecera"><p class="antetitulo">Tu casa en ALKI</p><h1>Hola, ' + esc(U.primerNombre(i.nombre)) + '</h1></header>' +
         ((S.confirmacionDe(ses) || {}).correctos === false ? '<div class="banda">' + ic('documentos') + '<span>Avisaste de que algún dato de tu contrato no cuadra. ALKI lo está revisando.</span></div>' : '') +
         '<a class="llavero" href="#/inquilino/casa" style="text-decoration:none">' +
           '<span class="llavero__codigo' + (h.codigo.length > 2 ? ' llavero__codigo--largo' : '') + '">' + h.codigo + '</span>' +

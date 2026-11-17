@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ALKI Rentals</title>
   <meta name="description" content="App de ALKI Rentals para inquilinos y propietarios: contratos, pagos, incidencias y estado de las viviendas.">
-  <meta name="theme-color" content="#062637">
+  <meta name="theme-color" content="#FAF8F4">
 
   <!-- PWA: permite instalar la web en el móvil como si fuera una app -->
   <link rel="manifest" href="manifest.json">
@@ -17,9 +17,12 @@
   <meta name="apple-mobile-web-app-title" content="ALKI">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
+  <link rel="preload" href="assets/fonts/jakarta.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/marca.css">
 </head>
-<body>
+<body class="cuerpo-app cuerpo-marca">
   <!-- Aquí app.js pinta la pantalla que toca en cada momento -->
   <div id="app"></div>
   <!-- Contenedor para las ventanas emergentes (modales) -->

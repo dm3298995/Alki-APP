@@ -48,7 +48,7 @@ Alki.vistas = Alki.vistas || {};
 
     return {
       titulo: 'Mis viviendas',
-      html: '<header class="cabecera"><h1>Hola, ' + esc(U.primerNombre(pr.nombre)) + '</h1>' +
+      html: '<header class="cabecera"><p class="antetitulo">Tus viviendas con ALKI</p><h1>Hola, ' + esc(U.primerNombre(pr.nombre)) + '</h1>' +
         '<p class="cabecera__sub">' + (viviendas.length === 1 ? 'Tu vivienda está gestionada por ALKI.' : 'Tus ' + viviendas.length + ' viviendas gestionadas por ALKI.') + '</p></header>' +
         '<div class="panel"><dl class="datos">' +
           '<div><dt>Próximo ingreso</dt><dd class="num">' + (proximo ? U.euro(proximo.importe) + ' <span class="suave pequeno">el ' + U.fecha(proximo.fecha) + '</span>' : '—') + '</dd></div>' +

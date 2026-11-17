@@ -26,6 +26,7 @@ Alki.vistas.login = function () {
       '<div class="entrada">' +
         '<div class="entrada__caja">' +
           '<div class="entrada__logo logo logo--grande">' + Alki.marca + '</div>' +
+          '<p class="entrada__lema">Más que un contrato, una familia.</p>' +
           '<div id="paso" aria-live="polite"></div>' +
           '<details class="probar"><summary>Probar con otro perfil</summary>' +
             '<button class="boton boton--sec boton--bloque" type="button" id="entrar-admin">Equipo ALKI</button>' +

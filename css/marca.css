@@ -1,6 +1,7 @@
 /* ==========================================================================
-   marca.css — BRAND BOOK DE ALKI APLICADO AL PANEL DEL EQUIPO
-   Se carga después de styles.css y panel.css, solo en panel.html.
+   marca.css — BRAND BOOK DE ALKI (app de inquilinos y panel del equipo)
+   Se carga después de styles.css (y panel.css en el panel). Se activa con la
+   clase «cuerpo-marca» en el <body> de index.html y de panel.html.
    Tokens del sistema de diseño «ALKI Rentals»:
      · Superficies: Blanco Cal #FAF8F4, blanco #FFF, celeste suave #E8F0FF
      · Tinta #111418, Profundo #16325C (títulos, barra y botones oscuros)
@@ -20,7 +21,7 @@
   font-weight: 100 900; font-display: swap;
 }
 
-.cuerpo-panel {
+.cuerpo-marca {
   /* Se reasignan las variables de la app a los tokens de la marca */
   --tinta: #16325C;            /* ink-strong (Profundo) */
   --tinta-base: #111418;       /* ink */
@@ -51,126 +52,126 @@
   background: var(--fondo);
   color: var(--tinta-base);
 }
-.cuerpo-panel h1, .cuerpo-panel h2, .cuerpo-panel h3 { color: var(--tinta); font-weight: 600; letter-spacing: -0.02em; }
-.cuerpo-panel a { color: var(--tinta); text-underline-offset: 3px; }
-.cuerpo-panel :focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; box-shadow: 0 0 0 2px var(--fondo); }
+.cuerpo-marca h1, .cuerpo-marca h2, .cuerpo-marca h3 { color: var(--tinta); font-weight: 600; letter-spacing: -0.02em; }
+.cuerpo-marca a { color: var(--tinta); text-underline-offset: 3px; }
+.cuerpo-marca :focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; box-shadow: 0 0 0 2px var(--fondo); }
 
 /* ---------- Barra superior: Profundo con el logo en negativo ---------- */
-.cuerpo-panel .pa__cabecera { background: var(--tinta); box-shadow: var(--sombra-m); padding-top: calc(12px + env(safe-area-inset-top)); padding-bottom: 12px; }
-.cuerpo-panel .pa__logo { font-weight: 600; }
-.cuerpo-panel .pa__logo b { color: var(--celeste); font-weight: 400; }
-.cuerpo-panel .pa__nav { gap: 4px; }
-.cuerpo-panel .pa__nav a { border-radius: 9999px; padding: 8px 14px; color: rgba(250, 248, 244, .78); font-weight: 500; font-size: .875rem; }
-.cuerpo-panel .pa__nav a:hover { background: rgba(145, 182, 255, .16); color: #FAF8F4; }
-.cuerpo-panel .pa__nav a[aria-current="page"] { background: var(--celeste); color: var(--tinta); font-weight: 600; }
-.cuerpo-panel .pa__usuario { color: #FAF8F4; font-weight: 500; }
-.cuerpo-panel .pa__usuario .avatar { background: var(--celeste); color: var(--tinta); }
-.cuerpo-panel .pa__main { padding-top: 36px; }
+.cuerpo-marca .pa__cabecera { background: var(--tinta); box-shadow: var(--sombra-m); padding-top: calc(12px + env(safe-area-inset-top)); padding-bottom: 12px; }
+.cuerpo-marca .pa__logo { font-weight: 600; }
+.cuerpo-marca .pa__logo b { color: var(--celeste); font-weight: 400; }
+.cuerpo-marca .pa__nav { gap: 4px; }
+.cuerpo-marca .pa__nav a { border-radius: 9999px; padding: 8px 14px; color: rgba(250, 248, 244, .78); font-weight: 500; font-size: .875rem; }
+.cuerpo-marca .pa__nav a:hover { background: rgba(145, 182, 255, .16); color: #FAF8F4; }
+.cuerpo-marca .pa__nav a[aria-current="page"] { background: var(--celeste); color: var(--tinta); font-weight: 600; }
+.cuerpo-marca .pa__usuario { color: #FAF8F4; font-weight: 500; }
+.cuerpo-marca .pa__usuario .avatar { background: var(--celeste); color: var(--tinta); }
+.cuerpo-marca .pa__main { padding-top: 36px; }
 
 /* ---------- Cabecera de cada pantalla: antetítulo + título ---------- */
-.cuerpo-panel .cabecera { margin-bottom: 28px; }
-.cuerpo-panel .cabecera h1 { font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 600; letter-spacing: -0.025em; }
-.cuerpo-panel .cabecera__sub { color: var(--tinta-suave); font-size: 1rem; }
+.cuerpo-marca .cabecera { margin-bottom: 28px; }
+.cuerpo-marca .cabecera h1 { font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 600; letter-spacing: -0.025em; }
+.cuerpo-marca .cabecera__sub { color: var(--tinta-suave); font-size: 1rem; }
 /* Antetítulo de la marca: mayúsculas con punto celeste */
 .antetitulo { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--texto); font-size: .8125rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-suave); }
 .antetitulo::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--celeste); flex: none; }
 
-.cuerpo-panel .seccion { margin-top: 36px; }
-.cuerpo-panel .seccion h2 { font-size: 1.25rem; font-weight: 600; }
-.cuerpo-panel .seccion__cab a { color: var(--tinta); }
+.cuerpo-marca .seccion { margin-top: 36px; }
+.cuerpo-marca .seccion h2 { font-size: 1.25rem; font-weight: 600; }
+.cuerpo-marca .seccion__cab a { color: var(--tinta); }
 
 /* ---------- Superficies: tarjetas blancas, borde fino y sombra suave ---------- */
-.cuerpo-panel .panel,
-.cuerpo-panel .lista,
-.cuerpo-panel .tabla-scroll,
-.cuerpo-panel .cifras { border-color: var(--linea); border-radius: var(--radio); box-shadow: var(--sombra-s); }
-.cuerpo-panel .panel { padding: 22px; }
-.cuerpo-panel .vacio { border-radius: var(--radio); background: transparent; border-color: var(--linea-fuerte); border-style: dashed; }
-.cuerpo-panel .fila:hover { background: #FBFCFF; }
-.cuerpo-panel .fila__icono { background: var(--celeste-claro); color: var(--tinta); border-radius: 9999px; }
+.cuerpo-marca .panel,
+.cuerpo-marca .lista,
+.cuerpo-marca .tabla-scroll,
+.cuerpo-marca .cifras { border-color: var(--linea); border-radius: var(--radio); box-shadow: var(--sombra-s); }
+.cuerpo-marca .panel { padding: 22px; }
+.cuerpo-marca .vacio { border-radius: var(--radio); background: transparent; border-color: var(--linea-fuerte); border-style: dashed; }
+.cuerpo-marca .fila:hover { background: #FBFCFF; }
+.cuerpo-marca .fila__icono { background: var(--celeste-claro); color: var(--tinta); border-radius: 9999px; }
 
 /* Cifras: números grandes en Plus Jakarta ligera, como el «display» de la marca */
-.cuerpo-panel .cifras strong { font-weight: 500; font-size: 2.1rem; letter-spacing: -0.03em; color: var(--tinta); }
-.cuerpo-panel .cifras span { font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-suave); }
-.cuerpo-panel .cifras > div { padding: 20px 22px; }
+.cuerpo-marca .cifras strong { font-weight: 500; font-size: 2.1rem; letter-spacing: -0.03em; color: var(--tinta); }
+.cuerpo-marca .cifras span { font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-suave); }
+.cuerpo-marca .cifras > div { padding: 20px 22px; }
 
 /* Tablas */
-.cuerpo-panel .tabla th { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-suave); background: #FBFAF7; }
-.cuerpo-panel .tabla thead th:first-child { border-top-left-radius: var(--radio); }
-.cuerpo-panel .tabla thead th:last-child { border-top-right-radius: var(--radio); }
-.cuerpo-panel .tabla tbody tr:hover td { background: #FBFCFF; }
+.cuerpo-marca .tabla th { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-suave); background: #FBFAF7; }
+.cuerpo-marca .tabla thead th:first-child { border-top-left-radius: var(--radio); }
+.cuerpo-marca .tabla thead th:last-child { border-top-right-radius: var(--radio); }
+.cuerpo-marca .tabla tbody tr:hover td { background: #FBFCFF; }
 
 /* ---------- Botones: siempre píldora ---------- */
-.cuerpo-panel .boton { border-radius: 9999px; padding: 11px 22px; font-weight: 600; background: var(--tinta); color: #FAF8F4; border: 1.5px solid var(--tinta); box-shadow: none; transition: background .15s, box-shadow .15s, transform .15s; }
-.cuerpo-panel .boton:hover { background: #0F223F; box-shadow: var(--sombra-s); }
+.cuerpo-marca .boton { border-radius: 9999px; padding: 11px 22px; font-weight: 600; background: var(--tinta); color: #FAF8F4; border: 1.5px solid var(--tinta); box-shadow: none; transition: background .15s, box-shadow .15s, transform .15s; }
+.cuerpo-marca .boton:hover { background: #0F223F; box-shadow: var(--sombra-s); }
 /* Principal de la marca: celeste con texto Profundo */
-.cuerpo-panel .boton--marca { background: var(--celeste); border-color: var(--celeste); color: var(--tinta); }
-.cuerpo-panel .boton--marca:hover { background: #7FA7F5; }
+.cuerpo-marca .boton--marca { background: var(--celeste); border-color: var(--celeste); color: var(--tinta); }
+.cuerpo-marca .boton--marca:hover { background: #7FA7F5; }
 /* Silencioso: transparente con borde */
-.cuerpo-panel .boton--sec { background: transparent; color: var(--tinta); border-color: var(--linea-fuerte); }
-.cuerpo-panel .boton--sec:hover { background: var(--celeste-claro); border-color: var(--tinta); }
-.cuerpo-panel .boton--peq { padding: 7px 14px; border-radius: 9999px; font-size: .8125rem; }
-.cuerpo-panel .boton--peligro { background: transparent; color: var(--mal); border-color: #E3B3AE; }
-.cuerpo-panel .boton-icono { border-radius: 9999px; color: var(--tinta); }
+.cuerpo-marca .boton--sec { background: transparent; color: var(--tinta); border-color: var(--linea-fuerte); }
+.cuerpo-marca .boton--sec:hover { background: var(--celeste-claro); border-color: var(--tinta); }
+.cuerpo-marca .boton--peq { padding: 7px 14px; border-radius: 9999px; font-size: .8125rem; }
+.cuerpo-marca .boton--peligro { background: transparent; color: var(--mal); border-color: #E3B3AE; }
+.cuerpo-marca .boton-icono { border-radius: 9999px; color: var(--tinta); }
 
 /* Campos de formulario */
-.cuerpo-panel input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
-.cuerpo-panel select, .cuerpo-panel textarea { border-radius: var(--radio-md); border-color: var(--linea); background: #fff; }
-.cuerpo-panel input:focus, .cuerpo-panel select:focus, .cuerpo-panel textarea:focus { border-color: var(--tinta); box-shadow: 0 0 0 3px var(--celeste-claro); outline: none; }
-.cuerpo-panel .controles select { border-radius: 9999px; padding: 8px 16px; }
-.cuerpo-panel .campo > label { color: var(--tinta); font-weight: 600; }
+.cuerpo-marca input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+.cuerpo-marca select, .cuerpo-marca textarea { border-radius: var(--radio-md); border-color: var(--linea); background: #fff; }
+.cuerpo-marca input:focus, .cuerpo-marca select:focus, .cuerpo-marca textarea:focus { border-color: var(--tinta); box-shadow: 0 0 0 3px var(--celeste-claro); outline: none; }
+.cuerpo-marca .controles select { border-radius: 9999px; padding: 8px 16px; }
+.cuerpo-marca .campo > label { color: var(--tinta); font-weight: 600; }
 
 /* Filtros en píldora: activo en Profundo */
-.cuerpo-panel .chips span, .cuerpo-panel .chips--filtro a { border-radius: 9999px; border-color: var(--linea); background: #fff; color: var(--tinta); font-weight: 500; }
-.cuerpo-panel .chips input:checked + span,
-.cuerpo-panel .chips--filtro a[aria-current="true"] { background: var(--tinta); border-color: var(--tinta); color: #FAF8F4; }
+.cuerpo-marca .chips span, .cuerpo-marca .chips--filtro a { border-radius: 9999px; border-color: var(--linea); background: #fff; color: var(--tinta); font-weight: 500; }
+.cuerpo-marca .chips input:checked + span,
+.cuerpo-marca .chips--filtro a[aria-current="true"] { background: var(--tinta); border-color: var(--tinta); color: #FAF8F4; }
 
 /* Etiquetas de estado: píldoras suaves con punto */
-.cuerpo-panel .etiqueta { border-radius: 9999px; font-weight: 600; letter-spacing: .01em; }
-.cuerpo-panel .etiqueta--info { color: var(--tinta); background: var(--celeste-claro); }
-.cuerpo-panel .etiqueta--info::before { background: var(--celeste); }
+.cuerpo-marca .etiqueta { border-radius: 9999px; font-weight: 600; letter-spacing: .01em; }
+.cuerpo-marca .etiqueta--info { color: var(--tinta); background: var(--celeste-claro); }
+.cuerpo-marca .etiqueta--info::before { background: var(--celeste); }
 
 /* Barras de progreso */
-.cuerpo-panel .panel .barra { background: var(--celeste-claro); border-radius: 9999px; }
-.cuerpo-panel .panel .barra i { background: var(--celeste); border-radius: 9999px; }
+.cuerpo-marca .panel .barra { background: var(--celeste-claro); border-radius: 9999px; }
+.cuerpo-marca .panel .barra i { background: var(--celeste); border-radius: 9999px; }
 
 /* ---------- Tablero de incidencias ---------- */
-.cuerpo-panel .tablero__col { background: #F1EDE6; border-radius: var(--radio); padding: 14px; }
-.cuerpo-panel .tablero__col h2 { font-size: .8125rem; letter-spacing: .12em; text-transform: uppercase; font-family: var(--texto); font-weight: 600; }
-.cuerpo-panel .tablero__col h2 span { background: #fff; border-radius: 9999px; padding: 0 9px; color: var(--tinta); }
-.cuerpo-panel .tarjeta-inc { border-radius: var(--radio-md); border: 1px solid var(--linea); border-left-width: 4px; box-shadow: var(--sombra-s); transition: box-shadow .15s, transform .15s; }
-.cuerpo-panel .tarjeta-inc:hover { box-shadow: var(--sombra-m); transform: translateY(-1px); border-color: var(--linea); }
-.cuerpo-panel .tarjeta-inc--media { border-left-color: var(--celeste); }
-.cuerpo-panel .tarjeta-inc--alta { border-left-color: #E2A33C; }
-.cuerpo-panel .tarjeta-inc--urgente { border-left-color: var(--mal); }
-.cuerpo-panel .tarjeta-inc__titulo { color: var(--tinta); font-weight: 600; }
+.cuerpo-marca .tablero__col { background: #F1EDE6; border-radius: var(--radio); padding: 14px; }
+.cuerpo-marca .tablero__col h2 { font-size: .8125rem; letter-spacing: .12em; text-transform: uppercase; font-family: var(--texto); font-weight: 600; }
+.cuerpo-marca .tablero__col h2 span { background: #fff; border-radius: 9999px; padding: 0 9px; color: var(--tinta); }
+.cuerpo-marca .tarjeta-inc { border-radius: var(--radio-md); border: 1px solid var(--linea); border-left-width: 4px; box-shadow: var(--sombra-s); transition: box-shadow .15s, transform .15s; }
+.cuerpo-marca .tarjeta-inc:hover { box-shadow: var(--sombra-m); transform: translateY(-1px); border-color: var(--linea); }
+.cuerpo-marca .tarjeta-inc--media { border-left-color: var(--celeste); }
+.cuerpo-marca .tarjeta-inc--alta { border-left-color: #E2A33C; }
+.cuerpo-marca .tarjeta-inc--urgente { border-left-color: var(--mal); }
+.cuerpo-marca .tarjeta-inc__titulo { color: var(--tinta); font-weight: 600; }
 
 /* ---------- Permisos ---------- */
-.cuerpo-panel .matriz select { border-radius: 9999px; padding: 6px 12px; }
-.cuerpo-panel .nivel--ver { background: var(--celeste-claro); color: var(--tinta); border-color: #C6D8FF; }
-.cuerpo-panel .nivel--editar { background: var(--ok-fondo); color: var(--ok); border-color: #BFE0CD; }
-.cuerpo-panel .nivel--no { background: var(--neutro-fondo); color: var(--neutro); border-color: #DCD7CD; }
+.cuerpo-marca .matriz select { border-radius: 9999px; padding: 6px 12px; }
+.cuerpo-marca .nivel--ver { background: var(--celeste-claro); color: var(--tinta); border-color: #C6D8FF; }
+.cuerpo-marca .nivel--editar { background: var(--ok-fondo); color: var(--ok); border-color: #BFE0CD; }
+.cuerpo-marca .nivel--no { background: var(--neutro-fondo); color: var(--neutro); border-color: #DCD7CD; }
 
 /* ---------- Gráficas de beneficio ---------- */
-.cuerpo-panel .grafica__fila:hover { background: var(--celeste-claro); }
-.cuerpo-panel .grafica__barra { background: var(--tinta); border-radius: 0 9999px 9999px 0; }
-.cuerpo-panel .grafica__barra--neg { background: var(--mal); border-radius: 9999px 0 0 9999px; }
-.cuerpo-panel .desglose__pista { background: var(--celeste-claro); }
-.cuerpo-panel .desglose__pista i { background: var(--tinta); border-radius: 9999px; }
+.cuerpo-marca .grafica__fila:hover { background: var(--celeste-claro); }
+.cuerpo-marca .grafica__barra { background: var(--tinta); border-radius: 0 9999px 9999px 0; }
+.cuerpo-marca .grafica__barra--neg { background: var(--mal); border-radius: 9999px 0 0 9999px; }
+.cuerpo-marca .desglose__pista { background: var(--celeste-claro); }
+.cuerpo-marca .desglose__pista i { background: var(--tinta); border-radius: 9999px; }
 
 /* ---------- Calculadora: tarjeta Profundo con la cifra en display ---------- */
-.cuerpo-panel .calc__resultado { background: var(--tinta); border-radius: var(--radio); padding: 26px; box-shadow: var(--sombra-l); }
-.cuerpo-panel .calc__cifra { font-weight: 300; font-size: 3rem; letter-spacing: -0.04em; }
-.cuerpo-panel .calc__resultado .positivo { color: #A9E8C2; }
-.cuerpo-panel .calc__resultado .negativo { color: #FFB1A8; }
-.cuerpo-panel .calc__resultado .antetitulo { color: rgba(250, 248, 244, .7); }
+.cuerpo-marca .calc__resultado { background: var(--tinta); border-radius: var(--radio); padding: 26px; box-shadow: var(--sombra-l); }
+.cuerpo-marca .calc__cifra { font-weight: 300; font-size: 3rem; letter-spacing: -0.04em; }
+.cuerpo-marca .calc__resultado .positivo { color: #A9E8C2; }
+.cuerpo-marca .calc__resultado .negativo { color: #FFB1A8; }
+.cuerpo-marca .calc__resultado .antetitulo { color: rgba(250, 248, 244, .7); }
 
 /* ---------- Ventanas, avisos y avatares ---------- */
-.cuerpo-panel .modal { border-radius: 32px 32px 0 0; box-shadow: var(--sombra-l); }
-@media (min-width: 700px) { .cuerpo-panel .modal { border-radius: 32px; } }
-.cuerpo-panel .modal-fondo { background: rgba(15, 34, 63, .45); }
-.cuerpo-panel .toast { border-radius: 9999px; background: var(--tinta); color: #FAF8F4; box-shadow: var(--sombra-m); }
-.cuerpo-panel .avatar { background: var(--celeste-claro); color: var(--tinta); font-family: var(--titulos); font-weight: 600; }
+.cuerpo-marca .modal { border-radius: 32px 32px 0 0; box-shadow: var(--sombra-l); }
+@media (min-width: 700px) { .cuerpo-marca .modal { border-radius: 32px; } }
+.cuerpo-marca .modal-fondo { background: rgba(15, 34, 63, .45); }
+.cuerpo-marca .toast { border-radius: 9999px; background: var(--tinta); color: #FAF8F4; box-shadow: var(--sombra-m); }
+.cuerpo-marca .avatar { background: var(--celeste-claro); color: var(--tinta); font-family: var(--titulos); font-weight: 600; }
 
 /* ---------- Bienvenida del panel: franja con el lema ---------- */
 .bienvenida { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 28px 30px; margin-bottom: 28px; border-radius: 32px; background: var(--tinta); color: #FAF8F4; box-shadow: var(--sombra-m); }
@@ -180,11 +181,150 @@
 .bienvenida p { color: rgba(250, 248, 244, .78); margin-top: 6px; }
 .bienvenida .antetitulo { color: rgba(250, 248, 244, .7); }
 .bienvenida__lema { font-family: var(--titulos); font-style: italic; color: var(--celeste); font-size: .95rem; position: relative; z-index: 1; }
-.cuerpo-panel h1[tabindex="-1"]:focus { outline: none; box-shadow: none; }
+.cuerpo-marca h1[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 /* El logo de la barra va en negativo (Blanco Cal y celeste) */
-.cuerpo-panel .pa__logo, .cuerpo-panel .pa__logo span { color: #FAF8F4; }
+.cuerpo-marca .pa__logo, .cuerpo-marca .pa__logo span { color: #FAF8F4; }
 @media (max-width: 520px) {
-  .cuerpo-panel .cifras strong { font-size: 1.55rem; white-space: nowrap; }
-  .cuerpo-panel .cifras span { letter-spacing: .05em; font-size: .72rem; }
+  .cuerpo-marca .cifras strong { font-size: 1.55rem; white-space: nowrap; }
+  .cuerpo-marca .cifras span { letter-spacing: .05em; font-size: .72rem; }
   .bienvenida { padding: 22px; border-radius: 24px; }
 }
+
+/* ==========================================================================
+   APP DE INQUILINOS Y PROPIETARIOS (index.html · body.cuerpo-app)
+   Misma marca que el panel: Blanco Cal de fondo, Profundo para títulos y
+   superficies oscuras, celeste solo como fondo o acento, píldoras al pulsar.
+   ========================================================================== */
+.cuerpo-app { --ancho-contenido: 900px; }
+.cuerpo-app .logo__texto { color: var(--tinta); font-weight: 700; letter-spacing: -0.035em; }
+.cuerpo-app .logo__texto span { font-weight: 400; }
+.cuerpo-app .enlace, .cuerpo-app .seccion__cab a { color: var(--tinta); text-decoration: underline; text-decoration-color: var(--celeste); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+/* ---------- Estructura: barra superior, barra de pestañas y menú lateral ---------- */
+.cuerpo-app .barra-superior { background: rgba(250, 248, 244, .9); border-bottom-color: var(--linea); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.cuerpo-app .barra-superior .avatar { background: var(--tinta); color: #FAF8F4; }
+.cuerpo-app .pestanas { background: rgba(255, 255, 255, .96); border-top-color: var(--linea); box-shadow: 0 -6px 24px rgba(22, 50, 92, .06); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.cuerpo-app .pestanas a { color: var(--tinta-suave); font-weight: 500; letter-spacing: .01em; }
+.cuerpo-app .pestanas a .icono { width: 52px; height: 30px; padding: 4px 15px; transition: background .15s; }
+.cuerpo-app .pestanas a[aria-current="page"] { color: var(--tinta); font-weight: 600; }
+.cuerpo-app .pestanas a[aria-current="page"] .icono { background: var(--celeste); color: var(--tinta); }
+@media (min-width: 960px) {
+  .cuerpo-app .lateral { background: var(--tinta); padding: 30px 18px 22px; }
+  .cuerpo-app .lateral .logo__texto, .cuerpo-app .lateral .logo__texto span { color: #FAF8F4; }
+  .cuerpo-app .lateral nav { gap: 4px; }
+  .cuerpo-app .lateral nav a { border-radius: 9999px; padding: 10px 16px; color: rgba(250, 248, 244, .78); font-weight: 500; }
+  .cuerpo-app .lateral nav a:hover { background: rgba(145, 182, 255, .14); color: #FAF8F4; }
+  .cuerpo-app .lateral nav a[aria-current="page"] { background: var(--celeste); color: var(--tinta); font-weight: 600; }
+  .cuerpo-app .lateral__usuario { border-top-color: rgba(250, 248, 244, .14); color: #FAF8F4; }
+  .cuerpo-app .lateral__usuario .avatar { background: var(--celeste); color: var(--tinta); }
+  .cuerpo-app .principal { padding: 48px 48px 64px; }
+}
+
+/* ---------- Cabeceras ---------- */
+.cuerpo-app .cabecera h1 { font-size: clamp(1.75rem, 6vw, 2.5rem); }
+.cuerpo-app .volver { color: var(--tinta); border-radius: 9999px; padding: 6px 12px 6px 8px; margin-left: -8px; }
+.cuerpo-app .volver:hover { background: var(--celeste-claro); }
+.cuerpo-app .seccion h2 { color: var(--tinta); }
+
+/* ---------- El llavero: tarjeta Profundo con el código en celeste ---------- */
+.cuerpo-app .llavero { color: #FAF8F4; border-radius: 40px 24px 24px 40px; box-shadow: var(--sombra-m); overflow: hidden; isolation: isolate; }
+.cuerpo-app .llavero::before { background: var(--fondo); box-shadow: inset 0 2px 4px rgba(15, 34, 63, .45); }
+/* Doble trazo de la marca, de fondo */
+.cuerpo-app .llavero::after { left: auto; right: -70px; top: -60px; margin: 0; width: 220px; height: 220px; border: 0; clip-path: none; z-index: -1;
+  background: radial-gradient(circle, transparent 54%, rgba(145, 182, 255, .2) 55%, rgba(145, 182, 255, .2) 62%, transparent 63%, transparent 70%, rgba(145, 182, 255, .12) 71%, rgba(145, 182, 255, .12) 76%, transparent 77%); }
+.cuerpo-app .llavero__codigo { font-weight: 400; letter-spacing: -0.06em; }
+.cuerpo-app .llavero__texto strong { color: #FAF8F4; font-weight: 600; letter-spacing: -0.01em; }
+.cuerpo-app .llavero__texto span { color: rgba(250, 248, 244, .76); }
+.cuerpo-app .llavero:hover { box-shadow: var(--sombra-l); }
+
+/* ---------- Accesos rápidos ---------- */
+.cuerpo-app .atajos { gap: 10px; margin-top: 18px; }
+.cuerpo-app .atajos a { border-radius: var(--radio); border-color: var(--linea); box-shadow: var(--sombra-s); font-weight: 500; padding: 16px 6px 14px; transition: box-shadow .15s, transform .15s; }
+.cuerpo-app .atajos a:hover { border-color: var(--linea); box-shadow: var(--sombra-m); transform: translateY(-1px); }
+.cuerpo-app .atajos .icono { width: 44px; height: 44px; padding: 11px; border-radius: 9999px; background: var(--celeste-claro); color: var(--tinta); }
+
+/* ---------- Pagos ---------- */
+.cuerpo-app .pago-destacado__importe, .cuerpo-app .resumen-alquiler .importe { font-weight: 300; letter-spacing: -0.04em; color: var(--tinta); }
+.cuerpo-app .pago-destacado__importe { font-size: 2.6rem; }
+.cuerpo-app .referencia { border-radius: 9999px; padding: 2px 10px; color: var(--tinta); }
+.cuerpo-app .mes-actual { border-left-width: 6px; }
+.cuerpo-app .mes-actual__estado { font-weight: 600; color: var(--tinta); }
+.cuerpo-app .meses { gap: 10px; }
+.cuerpo-app .mes { border-radius: var(--radio-md); min-height: 78px; padding: 12px 14px; transition: box-shadow .15s, transform .15s; }
+.cuerpo-app .mes:not(:disabled):hover { box-shadow: var(--sombra-s); transform: translateY(-1px); }
+.cuerpo-app .mes__nombre { font-weight: 600; text-transform: capitalize; }
+.cuerpo-app .mes__estado { font-weight: 600; }
+.cuerpo-app .mes--actual { outline-color: var(--tinta); outline-offset: 3px; }
+.cuerpo-app .leyenda { font-weight: 500; }
+.cuerpo-app .leyenda__m { border-radius: 9999px; }
+
+/* ---------- Plano de la vivienda ---------- */
+.cuerpo-app .plano { border-color: #C6D8FF; background-color: var(--celeste-claro); border-radius: var(--radio);
+  background-image: linear-gradient(rgba(22, 50, 92, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(22, 50, 92, .06) 1px, transparent 1px); }
+.cuerpo-app .plano__hab, .cuerpo-app .plano__zona { border-radius: 14px; }
+.cuerpo-app .plano__hab strong { font-weight: 600; }
+.cuerpo-app .plano__hab--libre { color: var(--tinta); border-color: var(--tinta); }
+.cuerpo-app .plano__hab--tuya { outline-color: var(--tinta); }
+.cuerpo-app .leyenda__m--libre { border-color: var(--tinta); }
+.cuerpo-app .vivienda { border-radius: var(--radio); box-shadow: var(--sombra-s); }
+.cuerpo-app a.vivienda:hover { border-color: var(--linea); box-shadow: var(--sombra-m); }
+.cuerpo-app .vivienda__cab h2, .cuerpo-app .vivienda__cab h3 { font-weight: 600; color: var(--tinta); }
+
+/* ---------- ALKI Social, mensajes y embajadores ---------- */
+.cuerpo-app .post { border-radius: var(--radio); box-shadow: var(--sombra-s); padding: 18px; }
+.cuerpo-app .post--alki { border-color: var(--celeste); background: linear-gradient(180deg, var(--celeste-claro), #fff 120px); }
+.cuerpo-app .post__autor { font-weight: 600; color: var(--tinta); }
+.cuerpo-app .post__accion { border-radius: 9999px; padding: 6px 12px; font-weight: 500; }
+.cuerpo-app .comentario { border-radius: var(--radio-md); background: var(--fondo); }
+.cuerpo-app .avatar--alki { background: var(--tinta); }
+.cuerpo-app .chat { border-radius: var(--radio); box-shadow: var(--sombra-s); }
+.cuerpo-app .burbuja { border-radius: 20px 20px 20px 6px; background: var(--celeste-claro); color: var(--tinta-base); }
+.cuerpo-app .burbuja--mia { background: var(--tinta); color: #FAF8F4; border-radius: 20px 20px 6px 20px; }
+.cuerpo-app .codigo-referido { border-radius: var(--radio); background: var(--celeste); color: var(--tinta); padding: 20px 22px; }
+.cuerpo-app .codigo-referido strong { font-weight: 600; letter-spacing: .02em; }
+.cuerpo-app .como-funciona li::before { background: var(--tinta); color: var(--celeste); font-weight: 600; }
+
+/* ---------- Documentos, fotos y avisos ---------- */
+.cuerpo-app .doc { border-radius: var(--radio); }
+.cuerpo-app .doc__cab { border-bottom-color: var(--tinta); }
+.cuerpo-app .foto-mini, .cuerpo-app .galeria button, .cuerpo-app .foto-anadir { border-radius: var(--radio-md); }
+.cuerpo-app .foto-anadir { border-color: var(--linea-fuerte); color: var(--tinta); }
+.cuerpo-app .foto-incidencia { border-radius: var(--radio); }
+.cuerpo-app .historial__autor { color: var(--tinta); }
+.cuerpo-app .banda { border-radius: var(--radio-md); }
+.cuerpo-app .consentimientos { border-radius: var(--radio-md); }
+.cuerpo-app .instalar { border-radius: var(--radio); border-color: #C6D8FF; background: #fff; box-shadow: var(--sombra-s); }
+.cuerpo-app .instalar__icono { color: var(--tinta); }
+.cuerpo-app .subir-foto { border-radius: var(--radio-md); color: var(--tinta); }
+
+/* ---------- Entrada (acceso) ---------- */
+.cuerpo-app .entrada { position: relative; overflow: hidden; isolation: isolate; }
+/* Doble trazo de la marca como fondo de la pantalla de entrada */
+.cuerpo-app .entrada::before { content: ''; position: absolute; z-index: -1; width: 440px; height: 440px; right: -250px; top: -250px; border-radius: 50%; border: 44px solid var(--celeste-claro); box-shadow: 0 0 0 26px var(--fondo), 0 0 0 44px rgba(145, 182, 255, .22); pointer-events: none; }
+.cuerpo-app .entrada__logo { margin-bottom: 14px; }
+.cuerpo-app .entrada__lema { text-align: center; font-family: var(--titulos); font-weight: 300; font-size: 1.05rem; color: var(--tinta); letter-spacing: -0.01em; margin-bottom: 34px; }
+.cuerpo-app .entrada h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.025em; }
+.cuerpo-app .entrada__ayuda { color: var(--tinta); font-weight: 500; border-radius: 9999px; padding: 8px 16px; }
+.cuerpo-app .entrada__ayuda:hover { background: var(--celeste-claro); color: var(--tinta); }
+.cuerpo-app .probar { border-top-color: var(--linea); }
+.cuerpo-app .pista-prueba { background: var(--aviso-fondo); color: var(--aviso); border-radius: var(--radio-md); }
+@media (min-width: 700px) {
+  .cuerpo-app .entrada__caja { max-width: 440px; background: #fff; border: 1px solid var(--linea); border-radius: 32px; padding: 40px 36px 28px; box-shadow: var(--sombra-m); }
+}
+.cuerpo-app .confirmar h1 { font-weight: 600; letter-spacing: -0.025em; }
+
+/* ---------- Versión de prueba, cookies y opiniones ---------- */
+.cuerpo-marca .franja-prueba { background: var(--aviso-fondo); color: var(--aviso); border-color: #EBD3A4; box-shadow: var(--sombra-m); font-family: var(--texto); }
+.cuerpo-marca .franja-prueba button { background: var(--tinta); color: #FAF8F4; }
+.cuerpo-marca .franja-prueba button.franja-prueba__sec { color: var(--aviso); }
+.cuerpo-marca .aviso-cookies { border-radius: var(--radio); box-shadow: var(--sombra-l); color: var(--tinta-base); }
+.cuerpo-marca .opinion { border-radius: 32px; box-shadow: var(--sombra-l); color: var(--tinta-base); }
+.cuerpo-marca .opinion h2 { color: var(--tinta); font-weight: 600; }
+.cuerpo-marca .opinion textarea, .cuerpo-marca .opinion select { border-radius: var(--radio-md); }
+.cuerpo-marca .opinion-fondo { background: rgba(15, 34, 63, .45); }
+.cuerpo-marca .opinion__estrellas button.activa { color: var(--tinta); }
+
+/* Avisos breves: si el texto ocupa dos líneas no se deforma la píldora */
+.cuerpo-marca .toast { border-radius: 22px; text-align: center; padding: 12px 20px; }
+.cuerpo-marca .toast { width: max-content; bottom: calc(136px + env(safe-area-inset-bottom)); }
+@media (min-width: 960px) { .cuerpo-marca .toast { bottom: 84px; } }
