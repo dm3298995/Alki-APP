@@ -4,10 +4,10 @@
    conexión. Solo se activa cuando la app se sirve por http/https
    (por ejemplo en GitHub Pages o Netlify), no al abrir el archivo a mano.
    ========================================================================== */
-const CACHE = 'alki-app-v5';
+const CACHE = 'alki-app-v6';
 const ARCHIVOS = [
   './', './index.html', './manifest.json', './css/styles.css',
-  './js/data.js', './js/store.js', './js/ui.js', './js/app.js',
+  './js/config.js', './js/medicion.js', './js/data.js', './js/store.js', './js/ui.js', './js/app.js',
   './js/views/legal.js', './js/views/comunes.js', './js/views/login.js', './js/views/inquilino.js',
   './js/views/propietario.js', './js/views/admin.js', './js/views/social.js', './js/demo-csv.js',
   './panel.html', './css/panel.css', './js/panel/equipo.js', './js/panel/costes.js', './js/panel/vistas.js', './js/panel/app.js',
@@ -28,6 +28,8 @@ self.addEventListener('activate', (e) => {
 // Al pedir un archivo: primero la red y, si no hay conexión, la copia guardada
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  // Solo los archivos de la propia app (las estadísticas externas no se guardan)
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
     fetch(e.request)
       .then((r) => { const copia = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copia)); return r; })

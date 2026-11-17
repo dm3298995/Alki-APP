@@ -7,6 +7,10 @@ Proyecto de la asignatura **Desarrollo Web y de Aplicaciones Móviles** (Univers
 
 Hecho con HTML, CSS y JavaScript sin librerías. Es una PWA: funciona sin conexión una vez abierta.
 
-> Versión de demostración: los pisos, habitaciones, rentas y fechas son los de la cartera de ALKI, pero los nombres y contactos de inquilinos y propietarios son **inventados**. No contiene documentos de identidad ni datos personales de terceros. Los datos que se crean al usarla se guardan solo en el navegador de cada persona.
+- **Plataforma del equipo** (con servidor, usuarios, permisos y datos compartidos): carpeta `plataforma/`. Se publica en Render con `render.yaml`.
+
+> Versión de demostración con **datos 100 % ficticios**: direcciones, códigos de piso, rentas, propietarios e inquilinos son inventados. Los datos que se crean al usar la app se guardan solo en el navegador de cada persona.
+
+**Cómo compartirla, medir el uso y publicar la plataforma sin tocar código: [PUBLICAR.md](PUBLICAR.md).**
 
 La guía completa está en [GUIA.md](GUIA.md).

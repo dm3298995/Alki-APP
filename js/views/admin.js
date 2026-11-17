@@ -444,7 +444,7 @@ Alki.vistas = Alki.vistas || {};
           '<div><dt>Por cobrar este mes</dt><dd class="num">' + U.euro(porCobrar) + '</dd></div>' +
           '<div><dt>Vencido total</dt><dd class="num negativo">' + U.euro(S.indicadores().vencido) + '</dd></div></dl></div>' +
         filtros('/admin/cobros', f, [['mes', 'Este mes'], ['revision', 'Por confirmar'], ['vencidos', 'Vencidos'], ['todos', 'Todos']]) +
-        buscador('Buscar por nombre o habitación (Alb20-H1)') +
+        buscador('Buscar por nombre o habitación (Llo3-H1)') +
         (lista.length ? '<ul class="lista">' + filas + '</ul>' : U.vacio('No hay recibos en esta lista.')),
       montar: function (raiz) { montarCobros(raiz); montarBuscador(raiz); }
     };

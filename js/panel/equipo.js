@@ -51,7 +51,7 @@ Alki.panel = Alki.panel || {};
     const db = S.db;
     if (!db.equipo || !db.equipo.length) {
       db.equipo = [{
-        id: 'eq-encargado', nombre: 'Daniel Marin Liccioni', email: 'danielmarin120971@icloud.com', puesto: 'Encargado',
+        id: 'eq-encargado', nombre: 'Daniel (encargado)', email: 'daniel@alki.casa', puesto: 'Encargado',
         superadmin: true, activo: true, permisos: Object.assign({}, perfiles.total.permisos), clave: null, creado: new Date().toISOString()
       }];
     }

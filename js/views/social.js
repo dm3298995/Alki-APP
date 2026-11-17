@@ -23,7 +23,7 @@ Alki.vistas = Alki.vistas || {};
     const c = S.contratoDeInquilino(ses.refId);
     return c ? S.buscar('viviendas', S.buscar('habitaciones', c.habitacionId).viviendaId) : null;
   }
-  // Nombre que se muestra: "Lucía N. · Sen15" (sin apellidos completos, por privacidad)
+  // Nombre que se muestra: "Lucía N. · Eix50" (sin apellidos completos, por privacidad)
   function autor(rol, id) {
     if (rol === 'admin') return { nombre: 'Equipo ALKI', detalle: 'ALKI Rentals', iniciales: '', alki: true };
     const i = S.buscar('inquilinos', id);

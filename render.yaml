@@ -1,0 +1,37 @@
+# ============================================================================
+# Render: publica la plataforma interna de ALKI con un solo clic
+# (Render → New → Blueprint → elegir este repositorio → Apply)
+# ============================================================================
+services:
+  - type: web
+    name: alki-plataforma
+    runtime: node
+    rootDir: plataforma
+    plan: starter            # el plan gratuito no guarda datos en disco
+    region: frankfurt        # servidores en la UE (RGPD)
+    buildCommand: echo "Sin dependencias que instalar"
+    startCommand: node server/index.js
+    healthCheckPath: /
+    disk:
+      name: datos-alki
+      mountPath: /var/data   # base de datos, documentos y copias de seguridad
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: DATA_DIR
+        value: /var/data
+      - key: ADMIN_EMAIL
+        value: daniel@alki.casa
+      - key: APP_SECRET        # clave de cifrado: Render la inventa y la guarda
+        generateValue: true
+      - key: DEMO_AL_INICIAR   # "1" = carga los datos ficticios la primera vez; "0" = empezar vacío
+        value: "1"
+      - key: DEMO_CLAVE        # contraseña de los usuarios de prueba (se ve en Environment)
+        generateValue: true

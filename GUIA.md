@@ -31,8 +31,8 @@ Las contraseñas no se guardan tal cual, sino su huella cifrada (SHA-256). Los t
 En el **Panel de ALKI → Importar CSV**, selecciona a la vez los dos archivos que exportas del programa de gestión (contratos e inquilinos). La app vuelve a cruzarlos y **conserva** lo que hayas hecho: pagos confirmados, incidencias, mensajes y los datos de cada vivienda.
 
 ### Cómo se cruzan los datos
-- Contrato `Alb20-H1` → vivienda **Alb20** → habitación **H1**.
-- Inmueble `025. Albocácer 20 P16 (Alb20) - Antonio` → n.º 025, dirección, código y propietario.
+- Contrato `Llo3-H1` → vivienda **Llo3** → habitación **H1**.
+- Inmueble `025. Plaza de la Llotgeta 3 P2 (Llo3) - Rosa M.` → n.º 025, dirección, código y propietario.
 - Los nombres del contrato se buscan en el CSV de inquilinos para sacar el correo, el teléfono y la **solvencia**.
 - La solvencia decide el estado de los recibos: *al día* → todo pagado; *pending* → falta el mes actual; *overdue* → faltan el mes anterior y el actual.
 - El barrio, el tipo de habitación y la cama salen de alki.es/rooms. Las habitaciones de la web sin contrato aparecen como **libres**.

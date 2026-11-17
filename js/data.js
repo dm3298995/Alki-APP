@@ -9,8 +9,8 @@
      avisos y mensajes para enseñar la app.
 
    Cómo se cruzan los datos:
-     Contrato "Alb20-H1" → piso Alb20 (código) → habitación H1
-     Inmueble "025. Albocácer 20 P16 (Alb20) - Antonio"
+     Contrato "Llo3-H1" → piso Llo3 (código) → habitación H1
+     Inmueble "025. Plaza de la Llotgeta 3 P2 (Llo3) - Rosa M."
                nº   dirección          código  propietario
      Inquilinos: el nombre del contrato se busca en el CSV de inquilinos
      para sacar correo, teléfono y solvencia (al día / con deuda).
@@ -49,21 +49,21 @@ window.Alki = window.Alki || {};
     serviciosIncluidos: ['Internet fibra', 'Agua', 'Luz', 'Limpieza de zonas comunes']
   };
 
-  /* ---------- Catálogo público de alki.es/rooms (barrio, precio, cama) ----------
+  /* ---------- Catálogo de habitaciones de la demo (barrio, precio, cama) · ficticio ----------
      Formato de cada habitación: [precio, tipo, ancho de cama en cm] */
   Alki.catalogoWeb = {
-    flo140: { barrio: 'Benicalap', m2: 72, hab: { H1: [390, 'Individual', 105], H2: [390, 'Individual', 105], H3: [420, 'Individual', 135], H4: [390, 'Individual', 105] } },
-    sen15: { barrio: 'Monteolivete', m2: 73, hab: { H4: [400, 'Individual', 105] } },
-    pal2: { barrio: 'Puerto de Sagunto', m2: 95, hab: { H1: [330, 'Individual', 90], H2: [350, 'Individual', 135], H3: [350, 'Individual', 135], H4: [350, 'Individual', 90], H5: [410, 'Pareja', 135] } },
-    ppq17: { barrio: 'Marxalenes', m2: 100, hab: { H1: [440, 'Individual', 135], H2: [450, 'Individual', 135], H3: [410, 'Individual', 105], H4: [420, 'Individual', 90], H5: [470, 'Individual', 135] } },
-    piv1: { barrio: 'Trinitat', m2: 80, hab: { H1: [410, 'Individual', 90], H2: [410, 'Individual', 90], H3: [440, 'Individual', 135], H4: [470, 'Individual', 135] } },
-    drp24: { barrio: 'Mislata', m2: 85, hab: { H1: [410, 'Individual', 135], H2: [420, 'Individual', 135], H3: [440, 'Individual', 135], H4: [510, 'Pareja', 135] } },
-    bal1: { barrio: 'Extramurs', m2: 92, hab: { H1: [520, 'Pareja', 135], H2: [470, 'Individual', 135], H3: [460, 'Individual', 135], H4: [440, 'Individual', 105], H5: [460, 'Individual', 105] } },
-    mdc21: { barrio: 'Patraix', m2: 87, hab: { H1: [465, 'Individual', 105], H2: [465, 'Individual', 135], H3: [485, 'Individual', 135], H4: [500, 'Individual', 135] } },
-    pdc6: { barrio: 'Extramurs', m2: 90, hab: { H1: [490, 'Individual', 135], H2: [450, 'Individual', 105], H3: [470, 'Individual', 135], H4: [410, 'Individual', 105], H5: [480, 'Individual', 135] } },
-    jmm28: { barrio: 'Torrent', m2: 88, hab: { H1: [410, 'Individual', 150], H2: [430, 'Individual', 135], H3: [410, 'Individual', 135], H4: [390, 'Individual', 105] } },
-    isp30: { barrio: 'Burjassot', m2: 74, hab: { H1: [440, 'Individual', 135], H2: [460, 'Individual', 135], H3: [460, 'Individual', 135], H4: [400, 'Individual', 105] } },
-    pmr14: { barrio: 'Algirós', m2: 93, hab: { H1: [450, 'Individual', 135] } }
+    pal63: { barrio: "Extramurs", m2: 72, hab: { H1: [355, 'Individual', 105], H2: [355, 'Individual', 105], H3: [405, 'Individual', 135], H4: [355, 'Individual', 105] } },
+    eix50: { barrio: "L'Eixample", m2: 73, hab: { H4: [390, 'Individual', 105] } },
+    aza14: { barrio: "Russafa", m2: 95, hab: { H1: [325, 'Individual', 90], H2: [345, 'Individual', 135], H3: [345, 'Individual', 135], H4: [345, 'Individual', 90], H5: [380, 'Pareja', 135] } },
+    xu4: { barrio: "Patraix", m2: 100, hab: { H1: [425, 'Individual', 135], H2: [460, 'Individual', 135], H3: [375, 'Individual', 105], H4: [445, 'Individual', 90], H5: [490, 'Individual', 135] } },
+    tor46: { barrio: "Torrefiel", m2: 80, hab: { H1: [405, 'Individual', 90], H2: [405, 'Individual', 90], H3: [475, 'Individual', 135], H4: [435, 'Individual', 135] } },
+    mst40: { barrio: "Mestalla", m2: 85, hab: { H1: [375, 'Individual', 135], H2: [455, 'Individual', 135], H3: [475, 'Individual', 135], H4: [490, 'Pareja', 135] } },
+    mis28: { barrio: "Mislata", m2: 92, hab: { H1: [475, 'Pareja', 135], H2: [445, 'Individual', 135], H3: [475, 'Individual', 135], H4: [455, 'Individual', 105], H5: [475, 'Individual', 105] } },
+    cor17: { barrio: "El Carme", m2: 87, hab: { H1: [460, 'Individual', 105], H2: [460, 'Individual', 135], H3: [505, 'Individual', 135], H4: [515, 'Individual', 135] } },
+    pat71: { barrio: "Patraix", m2: 90, hab: { H1: [510, 'Individual', 135], H2: [475, 'Individual', 105], H3: [500, 'Individual', 135], H4: [445, 'Individual', 105], H5: [460, 'Individual', 135] } },
+    ter9: { barrio: "Algirós", m2: 88, hab: { H1: [425, 'Individual', 150], H2: [430, 'Individual', 135], H3: [425, 'Individual', 135], H4: [360, 'Individual', 105] } },
+    nar12: { barrio: "Campanar", m2: 74, hab: { H1: [440, 'Individual', 135], H2: [450, 'Individual', 135], H3: [450, 'Individual', 135], H4: [425, 'Individual', 105] } },
+    orr2: { barrio: "Orriols", m2: 93, hab: { H1: [430, 'Individual', 135] } }
   };
 
   /* ======================================================================
@@ -239,12 +239,12 @@ window.Alki = window.Alki || {};
       const v = vivienda('v' + f.num);
       const nombres = separar(f.inquilinos);
       const gente = nombres.map(persona);
-      // Unidad: "Alb20-H1" → H1. Si el contrato no la dice, se busca en la ficha del inquilino.
+      // Unidad: "Llo3-H1" → H1. Si el contrato no la dice, se busca en la ficha del inquilino.
       let unidad = f.nombre.includes('-') ? f.nombre.split('-').slice(1).join('-').trim().toUpperCase() : '';
       if (!/^[HP]\d+$/.test(unidad)) {
         unidad = '';
         gente.forEach(function (p) {
-          // Solo vale la pista si la ficha habla de ESTE piso ("FLR140 - H4") o el nombre la lleva ("Denys H1")
+          // Solo vale la pista si la ficha habla de ESTE piso ("Pal63 - H4") o el nombre la lleva ("Denys H1")
           const ref = (p.referencia || '').match(/([A-Za-z]{2,}\d+)\s*[-\s]?\s*H\s?(\d)\b/i);
           const enNombre = p.nombre.match(/\bH(\d)\b/);
           if (!unidad && ref && alias[normalizar(ref[1])] === v.id) unidad = 'H' + ref[2];
@@ -368,8 +368,8 @@ window.Alki = window.Alki || {};
     const D = (n) => fecha(sumarDias(hoy, n));
     const M = (n, dia) => fecha(sumarMeses(hoy, n, dia));
 
-    // Inquilino de demo (Sen15-H1, con el correo real de Daniel) y su casa
-    const lucia = db.inquilinos.find((i) => i.email === 'danielmarin120971@icloud.com') || db.inquilinos[0];
+    // Inquilino de demo (Eix50-H1, cuenta de prueba) y su casa
+    const lucia = db.inquilinos.find((i) => i.email === 'lucia@demo.alki') || db.inquilinos[0];
     const cLucia = db.contratos.find((c) => c.inquilinoId === lucia.id);
     const hLucia = db.habitaciones.find((h) => h.id === cLucia.habitacionId);
     const vLucia = db.viviendas.find((v) => v.id === hLucia.viviendaId);

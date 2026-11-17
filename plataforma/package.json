@@ -1,0 +1,14 @@
+{
+  "name": "alki-gestion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma interna de gestión de inmuebles y habitaciones de ALKI",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node server/index.js",
+    "demo": "node server/scripts/demo.js",
+    "enlace-admin": "node server/scripts/enlace-admin.js",
+    "copia": "node server/scripts/copia.js",
+    "test": "node --test test/*.test.js"
+  }
+}

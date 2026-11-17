@@ -292,9 +292,9 @@ Alki.panel = Alki.panel || {};
      IMPORTAR GASTOS DESDE CSV (por ejemplo, exportados del banco o de Excel)
      ====================================================================== */
   const PLANTILLA = 'vivienda;categoria;concepto;importe;fecha;recurrencia;hasta\n' +
-    'Alb20;Suministros;Luz;85,40;01/11/2026;puntual;\n' +
-    'Alb20;Suministros;Internet;35,00;01/11/2026;mensual;\n' +
-    'Alb20;Impuestos y tasas;IBI;620,00;01/01/2026;anual;\n' +
+    'Llo3;Suministros;Luz;85,40;01/11/2026;puntual;\n' +
+    'Llo3;Suministros;Internet;35,00;01/11/2026;mensual;\n' +
+    'Llo3;Impuestos y tasas;IBI;620,00;01/01/2026;anual;\n' +
     'General;Gestión y comercial;Gestoría;150,00;01/11/2026;mensual;\n';
   function importarGastos(texto) {
     const t = Alki.leerCSV(texto);
@@ -327,7 +327,7 @@ Alki.panel = Alki.panel || {};
   }
   function modalImportarGastos() {
     U.abrirModal('Importar gastos',
-      '<p style="margin-bottom:12px">Sube un CSV con una fila por gasto. Columnas: <strong>vivienda</strong> (código, p. ej. Alb20, o «General»), <strong>categoria</strong>, concepto, <strong>importe</strong>, <strong>fecha</strong> (01/11/2026), recurrencia (puntual, mensual, trimestral o anual) y hasta.</p>' +
+      '<p style="margin-bottom:12px">Sube un CSV con una fila por gasto. Columnas: <strong>vivienda</strong> (código, p. ej. Llo3, o «General»), <strong>categoria</strong>, concepto, <strong>importe</strong>, <strong>fecha</strong> (01/11/2026), recurrencia (puntual, mensual, trimestral o anual) y hasta.</p>' +
       '<div class="acciones" style="margin:0 0 16px"><button class="boton boton--sec" type="button" id="plantilla">' + ic('descargar') + 'Descargar plantilla</button></div>' +
       '<form><div class="campo"><label for="csv-g">Archivo CSV</label><input id="csv-g" type="file" accept=".csv,text/csv" required></div>' +
       '<div class="resultado-import" hidden></div><p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">' + ic('subir') + 'Importar gastos</button></form>',
