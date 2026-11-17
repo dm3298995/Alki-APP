@@ -138,7 +138,17 @@ Alki.app = (function () {
   document.addEventListener('DOMContentLoaded', function () {
     E.asegurar();
     E.instalarRegistro();
+    const inv = E.aplicarInvitacion();
+    if (inv && inv.miembro) {
+      // Si había otra sesión abierta en este navegador, se cierra para que entre la persona invitada
+      const actual = E.sesion();
+      if (!actual || actual.miembroId !== inv.miembro.id) E.salir();
+      Alki.invitado = inv.miembro.email;
+      rutaActual = '/login';
+    }
     render();
+    if (inv && inv.miembro) U.toast('Bienvenido/a, ' + U.primerNombre(inv.miembro.nombre) + '. Crea tu contraseña para entrar.');
+    if (inv && inv.error) U.toast(inv.error);
   });
 
   return { ir, inicioDe: () => inicio(E.sesion()), refrescar: () => render(true) };

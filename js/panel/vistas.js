@@ -44,7 +44,7 @@ Alki.panel = Alki.panel || {};
               e.preventDefault();
               correo = caja.querySelector('#email').value.trim();
               const m = E.buscarPorEmail(correo);
-              if (!m) return error('Este correo no está en el equipo. Pide al encargado que te dé de alta.');
+              if (!m) return error('Este correo no está dado de alta en este móvil. Abre el <strong>enlace de invitación</strong> que te ha enviado el encargado (por WhatsApp o correo) y entra desde ahí.');
               if (!m.activo) return error('Tu acceso está desactivado. Habla con el encargado.');
               if (m.clave) pasoClave(m); else pasoCrear(m, true);
             });
@@ -83,7 +83,11 @@ Alki.panel = Alki.panel || {};
             caja.querySelector('[data-volver]').addEventListener('click', pasoCorreo);
           });
         }
-        pasoCorreo();
+        // Recién llegado con un enlace de invitación: va directo a crear su contraseña
+        const invitado = Alki.invitado && E.buscarPorEmail(Alki.invitado);
+        Alki.invitado = null;
+        if (invitado) { correo = invitado.email; if (invitado.clave) pasoClave(invitado); else pasoCrear(invitado, true); }
+        else pasoCorreo();
       }
     };
   }
@@ -306,7 +310,8 @@ Alki.panel = Alki.panel || {};
           '<li><div class="fila"><span class="avatar" aria-hidden="true">' + esc(iniciales(m.nombre)) + '</span><span class="fila__principal"><span class="fila__titulo">' + esc(m.nombre) + (m.superadmin ? ' <span class="etiqueta etiqueta--info">Encargado</span>' : '') + '</span>' +
           '<span class="fila__meta">' + esc(m.puesto) + ' · ' + esc(m.email) + ' · última actividad ' + ultima(m) + '</span></span>' +
           '<span class="fila__fin">' + estado(m) + '</span></div>' +
-          '<div class="fila__acciones"><button class="boton boton--sec boton--peq" type="button" data-editar="' + m.id + '">Editar datos</button>' +
+          '<div class="fila__acciones">' + (m.superadmin ? '' : '<button class="boton boton--marca boton--peq" type="button" data-invitar="' + m.id + '">' + ic('enviar') + 'Enviar invitación</button>') +
+          '<button class="boton boton--sec boton--peq" type="button" data-editar="' + m.id + '">Editar datos</button>' +
           (m.clave ? '<button class="boton boton--sec boton--peq" type="button" data-reset="' + m.id + '">Restablecer contraseña</button>' : '') +
           (m.superadmin ? '' : '<button class="boton boton--' + (m.activo ? 'peligro' : 'sec') + ' boton--peq" type="button" data-activo="' + m.id + '">' + (m.activo ? 'Desactivar acceso' : 'Reactivar acceso') + '</button>') + '</div></li>').join('') + '</ul></section>' +
         '<section class="seccion"><div class="seccion__cab"><h2>Permisos por pestaña</h2></div>' +
@@ -323,6 +328,7 @@ Alki.panel = Alki.panel || {};
       montar: function (raiz) {
         raiz.querySelector('#nuevo').addEventListener('click', () => formMiembro());
         raiz.querySelectorAll('[data-editar]').forEach((b) => b.addEventListener('click', () => formMiembro(E.miembro(b.dataset.editar))));
+        raiz.querySelectorAll('[data-invitar]').forEach((b) => b.addEventListener('click', () => modalInvitacion(E.miembro(b.dataset.invitar))));
         raiz.querySelectorAll('[data-reset]').forEach((b) => b.addEventListener('click', function () {
           const m = E.miembro(b.dataset.reset);
           U.abrirModal('Restablecer contraseña', '<p>' + esc(m.nombre) + ' tendrá que crear una contraseña nueva la próxima vez que entre con su correo.</p><div class="acciones"><button class="boton" type="button" id="si">Restablecer</button><button class="boton boton--sec" type="button" data-cerrar-modal>Cancelar</button></div>', {
@@ -349,6 +355,26 @@ Alki.panel = Alki.panel || {};
       }
     };
   }
+  /* Enlace de invitación: es lo que da de alta al trabajador en SU móvil */
+  function modalInvitacion(m, recien) {
+    if (!m) return;
+    const enlace = E.enlaceInvitacion(m.id);
+    const texto = 'Hola ' + U.primerNombre(m.nombre) + ', ya tienes acceso al panel de ALKI. Abre este enlace en tu móvil y crea tu contraseña: ' + enlace;
+    U.abrirModal(recien ? m.nombre + ' está dado de alta' : 'Invitación para ' + m.nombre,
+      '<p>' + (recien ? 'Falta un paso: e' : 'E') + 'nvíale este enlace. Al abrirlo en su móvil queda dado de alta allí y crea su contraseña con <strong>' + esc(m.email) + '</strong>.</p>' +
+      '<div class="campo" style="margin-top:14px"><label for="inv-enlace">Enlace de invitación</label><input id="inv-enlace" type="text" readonly value="' + esc(enlace) + '"></div>' +
+      '<div class="acciones"><a class="boton boton--marca" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>' +
+      '<a class="boton boton--sec" href="mailto:' + encodeURIComponent(m.email) + '?subject=' + encodeURIComponent('Tu acceso al panel de ALKI') + '&body=' + encodeURIComponent(texto) + '">Enviar por correo</a>' +
+      '<button class="boton boton--sec" type="button" id="inv-copiar">Copiar enlace</button></div>' +
+      '<p class="suave pequeno" style="margin-top:14px">Si luego cambias sus permisos, vuelve a enviarle la invitación para que se actualicen en su móvil.</p>', {
+      alMontar: (md) => md.querySelector('#inv-copiar').addEventListener('click', function () {
+        const campo = md.querySelector('#inv-enlace');
+        const hecho = () => U.toast('Enlace copiado');
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(enlace).then(hecho, () => { campo.select(); document.execCommand('copy'); hecho(); });
+        else { campo.select(); document.execCommand('copy'); hecho(); }
+      })
+    });
+  }
   function formMiembro(m) {
     U.abrirModal(m ? 'Editar datos' : 'Añadir trabajador',
       '<form novalidate><div class="campo"><label for="m-nombre">Nombre y apellidos</label><input id="m-nombre" name="nombre" type="text" value="' + esc(m ? m.nombre : '') + '"></div>' +
@@ -366,8 +392,9 @@ Alki.panel = Alki.panel || {};
           else E.crearTrabajador(d);
         } catch (x) { err.textContent = x.message; err.hidden = false; return; }
         U.cerrarModal();
-        U.toast(m ? 'Datos guardados' : d.nombre + ' ya puede entrar con su correo');
         Alki.app.refrescar();
+        if (m) U.toast('Datos guardados');
+        else modalInvitacion(E.buscarPorEmail(d.email), true);
       })
     });
   }

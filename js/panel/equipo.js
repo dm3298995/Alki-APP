@@ -204,9 +204,50 @@ Alki.panel = Alki.panel || {};
     envolver('cerrarSolicitud', () => ['Ha atendido una solicitud de un inquilino', '']);
   }
 
+  /* ---------- Invitaciones: llevar el alta al móvil del trabajador ----------
+     Sin servidor, cada navegador guarda su propia copia de los datos. Por eso,
+     al dar de alta a alguien se genera un ENLACE que lleva su nombre, correo,
+     puesto y permisos. Al abrirlo en su móvil, queda dado de alta allí y crea
+     su contraseña. Si cambias sus permisos, vuelve a enviarle el enlace. */
+  const b64 = (texto) => btoa(unescape(encodeURIComponent(texto))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const deB64 = (t) => decodeURIComponent(escape(atob(t.replace(/-/g, '+').replace(/_/g, '/'))));
+  function sello(d) { let h = 7; const t = JSON.stringify(d) + '|alki-invitacion'; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  function enlaceInvitacion(id) {
+    const m = miembro(id);
+    if (!m || m.superadmin) return '';
+    const d = { i: m.id, n: m.nombre, e: m.email, p: m.puesto, x: m.permisos, f: new Date().toISOString().slice(0, 10) };
+    const base = location.href.split('#')[0].split('?')[0];
+    return base + '?alta=' + b64(JSON.stringify({ d, s: sello(d) }));
+  }
+  // Se ejecuta al abrir el panel: si la dirección trae «?alta=…», da de alta a esa persona en este navegador
+  function aplicarInvitacion() {
+    let codigo = null;
+    try { codigo = new URLSearchParams(location.search).get('alta'); } catch (e) { return null; }
+    if (!codigo) return null;
+    // Quitar el código de la dirección para que no se quede a la vista
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { /* nada */ }
+    let paquete;
+    try { paquete = JSON.parse(deB64(codigo)); } catch (e) { return { error: 'El enlace de invitación está incompleto. Pide al encargado que te lo vuelva a enviar.' }; }
+    const d = paquete && paquete.d;
+    if (!d || !d.e || paquete.s !== sello(d)) return { error: 'El enlace de invitación no es válido. Pide al encargado que te lo vuelva a enviar.' };
+    const permisosValidos = {};
+    seccionesConPermiso.forEach((sec) => { const v = (d.x || {})[sec[0]]; permisosValidos[sec[0]] = ['no', 'ver', 'editar'].includes(v) ? v : 'no'; });
+    let m = buscarPorEmail(d.e);
+    if (m && m.superadmin) return { error: 'Ese correo es el del encargado.' };
+    if (m) {
+      Object.assign(m, { nombre: d.n, puesto: d.p, permisos: permisosValidos, activo: true });
+    } else {
+      m = { id: d.i || nuevoId('eq-'), nombre: d.n, email: normEmail(d.e), puesto: d.p || 'Equipo', superadmin: false, activo: true, permisos: permisosValidos, clave: null, creado: new Date().toISOString() };
+      if (miembro(m.id)) m.id = nuevoId('eq-');
+      S.db.equipo.push(m);
+    }
+    S.guardar();
+    return { miembro: m };
+  }
+
   Alki.panel.equipo = {
     secciones, seccionesConPermiso, soloEncargado, perfiles, asegurar, buscarPorEmail, miembro, comprobarClave, crearClave,
     sesion, entrar, salir, permiso, crearTrabajador, actualizarTrabajador, cambiarPermiso, aplicarPerfil, restablecerClave,
-    registrar, instalarRegistro
+    registrar, instalarRegistro, enlaceInvitacion, aplicarInvitacion
   };
 })();
