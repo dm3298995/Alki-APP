@@ -77,7 +77,9 @@
   }
 
   // ---------- Franja de versión de prueba y opiniones ----------
-  if (cfg.modoPrueba) {
+  // El panel conectado a Firebase trabaja con datos reales: sin franja de demostración
+  const panelReal = zona === 'panel' && Alki.nube && Alki.nube.activa;
+  if (cfg.modoPrueba && !panelReal) {
     const franja = el('div', { className: 'franja-prueba' });
     franja.append(el('span', {}, zona === 'panel' ? 'Panel de demostración · datos ficticios' : 'Versión de prueba · datos ficticios'));
     const b = el('button', { type: 'button' }, 'Tu opinión');

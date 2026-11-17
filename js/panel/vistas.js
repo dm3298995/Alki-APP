@@ -21,6 +21,7 @@ Alki.panel = Alki.panel || {};
      ACCESO DEL EQUIPO
      ====================================================================== */
   function login() {
+    if (Alki.nube && Alki.nube.activa) return loginNube();
     return {
       titulo: 'Acceso del equipo',
       html: '<div class="entrada"><div class="entrada__caja">' +
@@ -88,6 +89,141 @@ Alki.panel = Alki.panel || {};
         Alki.invitado = null;
         if (invitado) { correo = invitado.email; if (invitado.clave) pasoClave(invitado); else pasoCrear(invitado, true); }
         else pasoCorreo();
+      }
+    };
+  }
+
+
+  /* ---------- Acceso con Firebase (datos compartidos) ---------- */
+  function loginNube() {
+    const N = Alki.nube;
+    return {
+      titulo: 'Acceso del equipo',
+      html: '<div class="entrada"><div class="entrada__caja">' +
+        '<div class="entrada__logo logo logo--grande">' + Alki.logoSimbolo + '<span class="logo__texto">Alki<span>Panel</span></span></div>' +
+        '<div id="paso" aria-live="polite"></div></div>' +
+        '<p class="entrada__ayuda">Acceso solo para el equipo de ALKI</p></div>',
+      montar: function (raiz) {
+        const caja = raiz.querySelector('#paso');
+        let correo = (N.usuario() && N.usuario().email) || '';
+        const error = (t) => { const e = caja.querySelector('.error-form'); if (e) { e.innerHTML = t; e.hidden = false; } };
+        const pintar = (html, fn) => { caja.innerHTML = html; const f = caja.querySelector('input'); if (f) f.focus(); if (fn) fn(); };
+        const ocupado = (b, si) => { if (b) { b.disabled = si; b.dataset.texto = b.dataset.texto || b.textContent; b.textContent = si ? 'Un momento…' : b.dataset.texto; } };
+        const confidencialidad = '<div class="consentimientos"><label class="casilla"><input type="checkbox" id="acepto"><span>Me comprometo a tratar de forma <strong>confidencial</strong> los datos de inquilinos y propietarios y a usarlos solo para mi trabajo en ALKI (deber de secreto, RGPD).</span></label></div>';
+        const otro = '<button class="enlace entrada__cambiar" type="button" data-otro>Usar otro correo</button>';
+        function enlazarOtro() { const b = caja.querySelector('[data-otro]'); if (b) b.addEventListener('click', () => N.salir().then(pasoEntrar)); }
+
+        function pasoEntrar() {
+          pintar('<h1>Panel del equipo</h1><form novalidate>' +
+            '<div class="campo"><label for="email">Correo de trabajo</label><input id="email" type="email" autocomplete="username" value="' + esc(correo) + '"></div>' +
+            '<div class="campo"><label for="clave">Contraseña</label><input id="clave" type="password" autocomplete="current-password"></div>' +
+            '<p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">Entrar</button></form>' +
+            '<div class="entrada__enlaces"><button class="enlace" type="button" id="primera">Es mi primera vez</button><button class="enlace" type="button" id="olvido">¿Has olvidado tu contraseña?</button></div>', function () {
+            caja.querySelector('form').addEventListener('submit', function (e) {
+              e.preventDefault();
+              correo = caja.querySelector('#email').value.trim();
+              const b = this.querySelector('button[type=submit]'); ocupado(b, true);
+              N.entrar(correo, caja.querySelector('#clave').value).then(continuar).catch((x) => { ocupado(b, false); error(N.traducir(x)); });
+            });
+            caja.querySelector('#primera').addEventListener('click', () => { correo = caja.querySelector('#email').value.trim(); pasoCrear(); });
+            caja.querySelector('#olvido').addEventListener('click', function () {
+              correo = caja.querySelector('#email').value.trim();
+              if (!/^\S+@\S+\.\S+$/.test(correo)) return error('Escribe tu correo arriba y vuelve a pulsar.');
+              N.olvido(correo).then(() => error('Te hemos enviado un correo a <strong>' + esc(correo) + '</strong> para elegir una contraseña nueva. Mira también en «Spam».')).catch((x) => error(N.traducir(x)));
+            });
+          });
+        }
+        function pasoCrear() {
+          pintar('<h1>Crea tu contraseña</h1><p class="entrada__texto">Usa el correo con el que te ha dado de alta el encargado.</p><form novalidate>' +
+            '<div class="campo"><label for="email">Correo de trabajo</label><input id="email" type="email" autocomplete="username" value="' + esc(correo) + '"></div>' +
+            '<div class="campo"><label for="nueva">Contraseña</label><input id="nueva" type="password" autocomplete="new-password"><p class="campo__ayuda">Mínimo 8 caracteres.</p></div>' +
+            '<div class="campo"><label for="repite">Repite la contraseña</label><input id="repite" type="password" autocomplete="new-password"></div>' +
+            '<p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">Crear contraseña</button></form>' +
+            '<button class="enlace entrada__cambiar" type="button" id="atras">Ya tengo contraseña</button>', function () {
+            caja.querySelector('form').addEventListener('submit', function (e) {
+              e.preventDefault();
+              correo = caja.querySelector('#email').value.trim();
+              const n = caja.querySelector('#nueva').value, r = caja.querySelector('#repite').value;
+              if (!/^\S+@\S+\.\S+$/.test(correo)) return error('Escribe un correo válido.');
+              if (n.length < 8) return error('Mínimo 8 caracteres.');
+              if (n !== r) return error('Las contraseñas no coinciden.');
+              const b = this.querySelector('button[type=submit]'); ocupado(b, true);
+              N.crearCuenta(correo, n).then(pasoVerificar).catch((x) => { ocupado(b, false); error(N.traducir(x)); });
+            });
+            caja.querySelector('#atras').addEventListener('click', pasoEntrar);
+          });
+        }
+        function pasoVerificar() {
+          pintar('<h1>Confirma tu correo</h1><p class="entrada__texto">Te hemos enviado un correo a <strong>' + esc(correo) + '</strong>. Abre el enlace que trae (mira también en «Spam») y después vuelve aquí.</p>' +
+            '<p class="error-form" hidden></p><button class="boton boton--bloque" type="button" id="hecho">Ya lo he confirmado</button>' +
+            '<div class="entrada__enlaces"><button class="enlace" type="button" id="reenviar">Enviar el correo otra vez</button>' + otro + '</div>', function () {
+            caja.querySelector('#hecho').addEventListener('click', function () {
+              const b = this; ocupado(b, true);
+              N.recargarUsuario().then(function (u) {
+                ocupado(b, false);
+                if (u && u.emailVerified) continuar(); else error('Todavía no aparece confirmado. Abre el enlace del correo y vuelve a pulsar.');
+              }).catch((x) => { ocupado(b, false); error(N.traducir(x)); });
+            });
+            caja.querySelector('#reenviar').addEventListener('click', () => N.reenviarVerificacion().then(() => error('Correo enviado de nuevo.')).catch((x) => error(N.traducir(x))));
+            enlazarOtro();
+          });
+        }
+        function pasoCargando(texto) { pintar('<h1>' + esc(texto) + '</h1><p class="entrada__texto">Descargando los datos compartidos del equipo…</p>'); }
+        function pasoError(texto) {
+          pintar('<h1>No puedes entrar</h1><p class="entrada__texto">' + texto + '</p>' + otro, enlazarOtro);
+        }
+        // Ya con la cuenta abierta: ¿está en el equipo?
+        function continuar() {
+          const u = N.usuario();
+          if (!u) return pasoEntrar();
+          correo = u.email;
+          if (!u.emailVerified) return pasoVerificar();
+          pasoCargando('Hola');
+          N.fichaEquipo(u.email).then(function (ficha) {
+            if (ficha && !ficha.activo) return pasoError('Tu acceso está desactivado. Habla con el encargado.');
+            if (ficha && !ficha.confidencialidad) return pasoConfidencialidad(ficha);
+            if (ficha) return conectarYEntrar();
+            return N.hayEncargado().then((hay) => (hay ? pasoError('El correo <strong>' + esc(u.email) + '</strong> no está en el equipo. Pide al encargado que te dé de alta en «Equipo y permisos» con este correo.') : pasoFundar()));
+          }).catch((x) => pasoError(N.traducir(x)));
+        }
+        function pasoConfidencialidad(ficha) {
+          pintar('<h1>Bienvenido, ' + esc(U.primerNombre(ficha.nombre)) + '</h1><p class="entrada__texto">Antes de entrar por primera vez:</p>' + confidencialidad +
+            '<p class="error-form" hidden></p><button class="boton boton--bloque" type="button" id="seguir">Entrar en el panel</button>', function () {
+            caja.querySelector('#seguir').addEventListener('click', function () {
+              if (!caja.querySelector('#acepto').checked) return error('Tienes que aceptar el compromiso de confidencialidad.');
+              N.aceptarConfidencialidad().then(conectarYEntrar).catch((x) => error(N.traducir(x)));
+            });
+          });
+        }
+        // Base de datos vacía: la primera persona crea el panel y se queda como encargado
+        function pasoFundar() {
+          const local = (S.db.equipo || []).find((m) => m.superadmin) || {};
+          pintar('<h1>Activa el panel compartido</h1><p class="entrada__texto">La base de datos de ALKI está vacía. Si eres el encargado, al continuar quedarás como <strong>encargado</strong> con <strong>' + esc(correo) + '</strong> y se subirán los datos que hay ahora en este navegador.</p>' +
+            '<div class="campo"><label for="nombre">Tu nombre</label><input id="nombre" type="text" value="' + esc(String(local.nombre || '').replace(/\s*\(.*\)$/, '')) + '"></div>' + confidencialidad +
+            '<p class="error-form" hidden></p><button class="boton boton--bloque" type="button" id="fundar">Soy el encargado: activar</button>' + otro, function () {
+            enlazarOtro();
+            caja.querySelector('#fundar').addEventListener('click', function () {
+              const nombre = caja.querySelector('#nombre').value.trim();
+              if (!nombre) return error('Escribe tu nombre.');
+              if (!caja.querySelector('#acepto').checked) return error('Tienes que aceptar el compromiso de confidencialidad.');
+              const b = this; ocupado(b, true);
+              const perm = {}; E.seccionesConPermiso.forEach((x) => { perm[x[0]] = 'editar'; });
+              N.crearEncargado({ id: local.id || 'eq-encargado', nombre, puesto: 'Encargado', permisos: perm, creado: new Date().toISOString(), confidencialidad: new Date().toISOString() })
+                .then(conectarYEntrar).catch((x) => { ocupado(b, false); error(N.traducir(x)); });
+            });
+          });
+        }
+        function conectarYEntrar() {
+          pasoCargando('Entrando…');
+          return N.conectar({ alCambiar: () => Alki.app.refrescar() }).then(function () {
+            const ses = E.sesion();
+            if (!ses) return pasoError('No se ha podido abrir tu sesión. Vuelve a intentarlo.');
+            E.registrar('Ha entrado en el panel', '');
+            Alki.app.ir('/admin');
+          }).catch((x) => pasoError(N.traducir(x)));
+        }
+
+        if (N.usuario()) continuar(); else pasoEntrar();
       }
     };
   }
@@ -301,7 +437,9 @@ Alki.panel = Alki.panel || {};
   function equipo(p, ses) {
     const lista = S.db.equipo || [];
     const secs = E.seccionesConPermiso;
-    const estado = (m) => !m.activo ? '<span class="etiqueta etiqueta--neutro">Desactivado</span>' : m.clave ? '<span class="etiqueta etiqueta--ok">Activo</span>' : '<span class="etiqueta etiqueta--aviso">Pendiente de primer acceso</span>';
+    const nube = Alki.nube && Alki.nube.activa;
+    const haEntrado = (m) => (nube ? !!m.confidencialidad : !!m.clave);
+    const estado = (m) => !m.activo ? '<span class="etiqueta etiqueta--neutro">Desactivado</span>' : haEntrado(m) ? '<span class="etiqueta etiqueta--ok">Activo</span>' : '<span class="etiqueta etiqueta--aviso">Pendiente de primer acceso</span>';
     const ultima = (m) => { const a = (S.db.actividad || []).find((x) => x.quien === m.nombre); return a ? U.haceTiempo(a.fecha) : '—'; };
     return {
       titulo: 'Equipo y permisos',
@@ -312,8 +450,9 @@ Alki.panel = Alki.panel || {};
           '<span class="fila__fin">' + estado(m) + '</span></div>' +
           '<div class="fila__acciones">' + (m.superadmin ? '' : '<button class="boton boton--marca boton--peq" type="button" data-invitar="' + m.id + '">' + ic('enviar') + 'Enviar invitación</button>') +
           '<button class="boton boton--sec boton--peq" type="button" data-editar="' + m.id + '">Editar datos</button>' +
-          (m.clave ? '<button class="boton boton--sec boton--peq" type="button" data-reset="' + m.id + '">Restablecer contraseña</button>' : '') +
-          (m.superadmin ? '' : '<button class="boton boton--' + (m.activo ? 'peligro' : 'sec') + ' boton--peq" type="button" data-activo="' + m.id + '">' + (m.activo ? 'Desactivar acceso' : 'Reactivar acceso') + '</button>') + '</div></li>').join('') + '</ul></section>' +
+          (haEntrado(m) || (nube && m.superadmin) ? '<button class="boton boton--sec boton--peq" type="button" data-reset="' + m.id + '">' + (nube ? 'Cambiar contraseña' : 'Restablecer contraseña') + '</button>' : '') +
+          (m.superadmin ? '' : '<button class="boton boton--sec boton--peq" type="button" data-activo="' + m.id + '">' + (m.activo ? 'Desactivar acceso' : 'Reactivar acceso') + '</button>' +
+            '<button class="boton boton--peligro boton--peq" type="button" data-eliminar="' + m.id + '">' + ic('papelera') + 'Eliminar</button>') + '</div></li>').join('') + '</ul></section>' +
         '<section class="seccion"><div class="seccion__cab"><h2>Permisos por pestaña</h2></div>' +
           '<p class="suave pequeno" style="margin-bottom:10px"><strong>Sin acceso</strong>: no ve la pestaña. <strong>Solo ver</strong>: la consulta pero no cambia nada. <strong>Editar</strong>: trabaja en ella. Los cambios se guardan al momento.</p>' +
           '<div class="tabla-scroll"><table class="tabla matriz"><thead><tr><th>Persona</th>' + secs.map((s) => '<th title="' + esc(s[4]) + '">' + esc(s[1]) + '</th>').join('') + '<th>Perfil</th></tr></thead><tbody>' +
@@ -328,11 +467,25 @@ Alki.panel = Alki.panel || {};
       montar: function (raiz) {
         raiz.querySelector('#nuevo').addEventListener('click', () => formMiembro());
         raiz.querySelectorAll('[data-editar]').forEach((b) => b.addEventListener('click', () => formMiembro(E.miembro(b.dataset.editar))));
+        raiz.querySelectorAll('[data-eliminar]').forEach((b) => b.addEventListener('click', function () {
+          const m = E.miembro(b.dataset.eliminar);
+          U.abrirModal('Eliminar a ' + m.nombre,
+            '<p><strong>' + esc(m.nombre) + '</strong> dejará de tener acceso al panel y desaparecerá del equipo. Esto no se puede deshacer: si vuelve, tendrás que darle de alta de nuevo.</p>' +
+            '<p class="suave pequeno" style="margin-top:10px">Lo que ha hecho (incidencias, gastos, actividad) se conserva con su nombre. Sus incidencias asignadas quedan sin responsable.</p>' +
+            '<p class="suave pequeno" style="margin-top:6px">Si solo quieres quitarle el acceso un tiempo, usa «Desactivar acceso».</p>' +
+            '<div class="acciones"><button class="boton boton--peligro" type="button" id="si">Eliminar del equipo</button><button class="boton boton--sec" type="button" data-cerrar-modal>Cancelar</button></div>', {
+            alMontar: (md) => md.querySelector('#si').addEventListener('click', () => { E.eliminarTrabajador(m.id); U.cerrarModal(); U.toast(U.primerNombre(m.nombre) + ' ya no está en el equipo'); Alki.app.refrescar(); })
+          });
+        }));
         raiz.querySelectorAll('[data-invitar]').forEach((b) => b.addEventListener('click', () => modalInvitacion(E.miembro(b.dataset.invitar))));
         raiz.querySelectorAll('[data-reset]').forEach((b) => b.addEventListener('click', function () {
           const m = E.miembro(b.dataset.reset);
-          U.abrirModal('Restablecer contraseña', '<p>' + esc(m.nombre) + ' tendrá que crear una contraseña nueva la próxima vez que entre con su correo.</p><div class="acciones"><button class="boton" type="button" id="si">Restablecer</button><button class="boton boton--sec" type="button" data-cerrar-modal>Cancelar</button></div>', {
-            alMontar: (md) => md.querySelector('#si').addEventListener('click', () => { E.restablecerClave(m.id); U.cerrarModal(); U.toast('Contraseña restablecida'); Alki.app.refrescar(); })
+          const textoReset = nube ? 'Le enviaremos a <strong>' + esc(m.email) + '</strong> un correo con un enlace para elegir una contraseña nueva.' : esc(m.nombre) + ' tendrá que crear una contraseña nueva la próxima vez que entre con su correo.';
+          U.abrirModal(nube ? 'Cambiar contraseña' : 'Restablecer contraseña', '<p>' + textoReset + '</p><div class="acciones"><button class="boton" type="button" id="si">' + (nube ? 'Enviar el correo' : 'Restablecer') + '</button><button class="boton boton--sec" type="button" data-cerrar-modal>Cancelar</button></div>', {
+            alMontar: (md) => md.querySelector('#si').addEventListener('click', () => {
+              Promise.resolve(E.restablecerClave(m.id)).then(() => { U.cerrarModal(); U.toast(nube ? 'Correo enviado a ' + m.email : 'Contraseña restablecida'); Alki.app.refrescar(); })
+                .catch((e) => U.toast(Alki.nube.traducir(e)));
+            })
           });
         }));
         raiz.querySelectorAll('[data-activo]').forEach((b) => b.addEventListener('click', function () {
@@ -359,9 +512,12 @@ Alki.panel = Alki.panel || {};
   function modalInvitacion(m, recien) {
     if (!m) return;
     const enlace = E.enlaceInvitacion(m.id);
-    const texto = 'Hola ' + U.primerNombre(m.nombre) + ', ya tienes acceso al panel de ALKI. Abre este enlace en tu móvil y crea tu contraseña: ' + enlace;
+    const texto = 'Hola ' + U.primerNombre(m.nombre) + ', ya tienes acceso al panel de ALKI. ' + (Alki.nube && Alki.nube.activa
+      ? 'Entra aquí, pulsa «Es mi primera vez», crea tu contraseña con tu correo (' + m.email + ') y confirma el correo que te llegará: ' : 'Abre este enlace en tu móvil y crea tu contraseña: ') + enlace;
     U.abrirModal(recien ? m.nombre + ' está dado de alta' : 'Invitación para ' + m.nombre,
-      '<p>' + (recien ? 'Falta un paso: e' : 'E') + 'nvíale este enlace. Al abrirlo en su móvil queda dado de alta allí y crea su contraseña con <strong>' + esc(m.email) + '</strong>.</p>' +
+      (Alki.nube && Alki.nube.activa
+        ? '<p>' + (recien ? 'Ya puede entrar. ' : '') + 'Envíale el enlace del panel: tiene que pulsar <strong>«Es mi primera vez»</strong>, crear su contraseña con <strong>' + esc(m.email) + '</strong> y confirmar el correo que le llegará.</p>'
+        : '<p>' + (recien ? 'Falta un paso: e' : 'E') + 'nvíale este enlace. Al abrirlo en su móvil queda dado de alta allí y crea su contraseña con <strong>' + esc(m.email) + '</strong>.</p>') +
       '<div class="campo" style="margin-top:14px"><label for="inv-enlace">Enlace de invitación</label><input id="inv-enlace" type="text" readonly value="' + esc(enlace) + '"></div>' +
       '<div class="acciones"><a class="boton boton--marca" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>' +
       '<a class="boton boton--sec" href="mailto:' + encodeURIComponent(m.email) + '?subject=' + encodeURIComponent('Tu acceso al panel de ALKI') + '&body=' + encodeURIComponent(texto) + '">Enviar por correo</a>' +
@@ -434,7 +590,7 @@ Alki.panel = Alki.panel || {};
         '</ul></section>' +
         '<div class="acciones"><button class="boton boton--sec" type="button" id="cambiar">Cambiar contraseña</button><button class="boton" type="button" id="salir">' + ic('salir') + 'Cerrar sesión</button></div>',
       montar: function (raiz) {
-        raiz.querySelector('#salir').addEventListener('click', () => { E.registrar('Ha cerrado sesión', ''); E.salir(); Alki.app.ir('/login'); });
+        raiz.querySelector('#salir').addEventListener('click', () => { E.registrar('Ha cerrado sesión', ''); Promise.resolve(E.salir()).then(() => Alki.app.ir('/login')); });
         raiz.querySelector('#cambiar').addEventListener('click', function () {
           U.abrirModal('Cambiar contraseña', '<form novalidate><div class="campo"><label for="n1">Nueva contraseña</label><input id="n1" type="password" autocomplete="new-password"></div><div class="campo"><label for="n2">Repite la contraseña</label><input id="n2" type="password" autocomplete="new-password"></div><p class="error-form" hidden></p><button class="boton boton--bloque" type="submit">Guardar</button></form>', {
             alMontar: (md) => md.querySelector('form').addEventListener('submit', function (e) {

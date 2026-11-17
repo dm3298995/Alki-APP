@@ -1,0 +1,72 @@
+rules_version = '2';
+
+// ==========================================================================
+// Reglas de seguridad de Firestore para el panel de ALKI
+// Se pegan en console.firebase.google.com → Firestore Database → Reglas → Publicar
+//
+// · Solo entra quien tiene cuenta con el correo CONFIRMADO y está en la lista
+//   «equipo» con el acceso activo.
+// · Solo el encargado puede dar de alta, cambiar o eliminar a gente del equipo.
+// · El primer correo que activa una base de datos vacía se queda como encargado
+//   (eso solo puede pasar una vez).
+// ==========================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function conectado() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function correo() {
+      return request.auth.token.email.lower();
+    }
+    function rutaFicha() {
+      return /databases/$(database)/documents/equipo/$(correo());
+    }
+    function miembro() {
+      return conectado() && exists(rutaFicha()) && get(rutaFicha()).data.activo == true;
+    }
+    function encargado() {
+      return miembro() && get(rutaFicha()).data.superadmin == true;
+    }
+
+    // Quién es el encargado: se fija la primera vez y ya no se puede cambiar
+    match /ajustes/encargado {
+      allow read: if conectado();
+      allow create: if conectado()
+        && request.resource.data.email == correo()
+        && existsAfter(rutaFicha());
+      allow update, delete: if false;
+    }
+
+    // Personas del equipo (el identificador es su correo en minúsculas)
+    match /equipo/{email} {
+      allow read: if miembro() || (conectado() && email == correo());
+
+      // Primer acceso a la base de datos vacía: se crea el encargado
+      allow create: if conectado()
+        && email == correo()
+        && !exists(/databases/$(database)/documents/ajustes/encargado)
+        && getAfter(/databases/$(database)/documents/ajustes/encargado).data.email == correo()
+        && request.resource.data.superadmin == true
+        && request.resource.data.activo == true;
+
+      // El encargado da de alta y cambia a los trabajadores (nunca crea otro encargado)
+      allow create: if encargado() && email != correo()
+        && request.resource.data.superadmin == false;
+      allow update: if encargado()
+        && (email == correo()
+              ? request.resource.data.superadmin == true && request.resource.data.activo == true
+              : request.resource.data.superadmin == false);
+      allow delete: if encargado() && email != correo();
+
+      // Cada persona solo puede apuntar que acepta el compromiso de confidencialidad
+      allow update: if miembro() && email == correo()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['confidencialidad']);
+    }
+
+    // Datos del panel: viviendas, contratos, cobros, incidencias, gastos…
+    match /{lista}/{id} {
+      allow read, write: if miembro() && lista.matches('d_.*');
+    }
+  }
+}

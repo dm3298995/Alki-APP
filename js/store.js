@@ -21,7 +21,13 @@ Alki.store = (function () {
   const nuevoId = (prefijo) => prefijo + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
 
   /* ---------------- Guardar / cargar ---------------- */
+  // Guarda en este navegador y, si el panel está conectado a Firebase, también en la nube
   function guardar() {
+    const ok = guardarLocal();
+    if (Alki.alGuardar) { try { Alki.alGuardar(); } catch (e) { console.warn(e); } }
+    return ok || !!(Alki.nube && Alki.nube.listo && Alki.nube.listo());
+  }
+  function guardarLocal() {
     try {
       localStorage.setItem(CLAVE_DATOS, JSON.stringify(db));
       return true;
@@ -467,6 +473,8 @@ Alki.store = (function () {
   function importarCopia(texto) {
     const d = JSON.parse(texto);
     if (d.version !== 3 || !Array.isArray(d.viviendas)) throw new Error('El archivo no es una copia de seguridad de esta app.');
+    // Con la nube, el equipo no se toca al restaurar una copia (lo gestiona el encargado)
+    if (Alki.nube && Alki.nube.listo && Alki.nube.listo()) d.equipo = db.equipo;
     db = d; guardar();
   }
 
@@ -479,7 +487,7 @@ Alki.store = (function () {
 
   return {
     get db() { return db; },
-    guardar, reiniciar, sesion, entrarComo, cerrarSesion, usuariosPorEmail, usuarioDe, comprobarContrasena, crearContrasena,
+    guardar, guardarLocal, reiniciar, sesion, entrarComo, cerrarSesion, usuariosPorEmail, usuarioDe, comprobarContrasena, crearContrasena,
     consentimientoDe, enSocial, unirseSocial, confirmacionDe, necesitaConfirmar, confirmarDatos, estadoConfirmacion,
     buscar, habitacionesDe, viviendasDe, contratoDeHabitacion, contratoDeInquilino, inquilinoDeHabitacion,
     estadoHabitacion, estadoPago, contratosDeHabitacion, esTitular, actualizarVivienda, importarCSV, exportarCopia, importarCopia, pagosDeContrato, pagosDeInquilino, deudaDeInquilino,

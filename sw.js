@@ -4,13 +4,13 @@
    conexión. Solo se activa cuando la app se sirve por http/https
    (por ejemplo en GitHub Pages o Netlify), no al abrir el archivo a mano.
    ========================================================================== */
-const CACHE = 'alki-app-v10';
+const CACHE = 'alki-app-v11';
 const ARCHIVOS = [
   './', './index.html', './manifest.json', './css/styles.css',
   './js/config.js', './js/medicion.js', './js/data.js', './js/store.js', './js/ui.js', './js/app.js',
   './js/views/legal.js', './js/views/comunes.js', './js/views/login.js', './js/views/inquilino.js',
   './js/views/propietario.js', './js/views/admin.js', './js/views/social.js', './js/demo-csv.js',
-  './panel.html', './css/panel.css', './css/marca.css', './assets/fonts/jakarta.woff2', './assets/fonts/inter.woff2', './js/panel/equipo.js', './js/panel/costes.js', './js/panel/vistas.js', './js/panel/app.js',
+  './panel.html', './css/panel.css', './css/marca.css', './assets/fonts/jakarta.woff2', './assets/fonts/inter.woff2', './js/panel/equipo.js', './js/panel/costes.js', './js/panel/vistas.js', './js/panel/app.js', './js/nube.js',
   './assets/icon.svg', './assets/icon-180.png', './assets/icon-192.png', './assets/icon-512.png',
   './assets/fonts/bricolage.woff2', './assets/fonts/figtree.woff2', './reparar.html'
 ];

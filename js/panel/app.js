@@ -146,6 +146,15 @@ Alki.app = (function () {
       Alki.invitado = inv.miembro.email;
       rutaActual = '/login';
     }
+    // Con Firebase: primero se comprueba si ya había una sesión abierta en este móvil
+    if (Alki.nube && Alki.nube.activa) {
+      document.getElementById('app').innerHTML = '<div class="entrada"><div class="entrada__caja"><div class="entrada__logo logo logo--grande">' + Alki.logoSimbolo + '<span class="logo__texto">Alki<span>Panel</span></span></div><p class="entrada__texto" style="text-align:center">Conectando…</p></div></div>';
+      Alki.nube.iniciar().then(() => { rutaActual = '/login'; render(); }).catch(function (e) {
+        console.error(e);
+        document.querySelector('#app .entrada__texto').textContent = 'No se ha podido conectar con el servidor. Revisa tu conexión y recarga la página.';
+      });
+      return;
+    }
     render();
     if (inv && inv.miembro) U.toast('Bienvenido/a, ' + U.primerNombre(inv.miembro.nombre) + '. Crea tu contraseña para entrar.');
     if (inv && inv.error) U.toast(inv.error);

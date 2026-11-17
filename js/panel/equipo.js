@@ -86,7 +86,17 @@ Alki.panel = Alki.panel || {};
   /* ---------- Sesión del panel (separada de la app de inquilinos) ---------- */
   const CLAVE_SESION = 'alki-panel-sesion';
   let enMemoria = null;
+  const N = () => (Alki.nube && Alki.nube.activa ? Alki.nube : null);
   function sesion() {
+    // Con Firebase: la sesión es la cuenta de Firebase, y solo cuando ya están los datos compartidos
+    if (N()) {
+      const u = N().usuario();
+      if (!u || !u.emailVerified || !N().listo()) return null;
+      const yo = buscarPorEmail(u.email);
+      if (!yo || !yo.activo) return null;
+      Alki.autorActual = yo.nombre;
+      return { rol: 'admin', refId: null, nombre: yo.nombre, email: yo.email, miembroId: yo.id, superadmin: !!yo.superadmin };
+    }
     let id = enMemoria;
     try { id = localStorage.getItem(CLAVE_SESION) || enMemoria; } catch (e) { /* nada */ }
     const m = id && miembro(id);
@@ -103,6 +113,8 @@ Alki.panel = Alki.panel || {};
   function salir() {
     enMemoria = null;
     try { localStorage.removeItem(CLAVE_SESION); } catch (e) { /* nada */ }
+    if (N()) return N().salir();
+    return Promise.resolve();
   }
 
   /* ---------- Permisos ---------- */
@@ -155,9 +167,23 @@ Alki.panel = Alki.panel || {};
   function restablecerClave(id) {
     const m = miembro(id);
     if (!m) return;
+    // Con Firebase: le llega un correo para elegir una contraseña nueva
+    if (N()) { registrar('Ha enviado un correo para cambiar la contraseña a ' + m.nombre, m.email); return N().olvido(m.email); }
     m.clave = null;
     registrar('Ha restablecido la contraseña de ' + m.nombre, 'Creará una nueva al entrar');
     S.guardar();
+  }
+
+  // Eliminar a alguien del equipo: pierde el acceso y desaparece de la lista.
+  // Lo que hizo (incidencias, gastos, actividad) se conserva con su nombre.
+  function eliminarTrabajador(id) {
+    const m = miembro(id);
+    if (!m || m.superadmin) return false;
+    S.db.equipo = S.db.equipo.filter((x) => x.id !== id);
+    (S.db.incidencias || []).forEach((i) => { if (i.asignadoA === id) i.asignadoA = null; });
+    registrar('Ha eliminado del equipo a ' + m.nombre, m.puesto + ' · ' + m.email);
+    S.guardar();
+    return true;
   }
 
   /* ---------- Registro de actividad ---------- */
@@ -215,12 +241,15 @@ Alki.panel = Alki.panel || {};
   function enlaceInvitacion(id) {
     const m = miembro(id);
     if (!m || m.superadmin) return '';
+    // Con Firebase no hace falta llevar el alta: basta con la dirección del panel
+    if (N()) return location.href.split('#')[0].split('?')[0];
     const d = { i: m.id, n: m.nombre, e: m.email, p: m.puesto, x: m.permisos, f: new Date().toISOString().slice(0, 10) };
     const base = location.href.split('#')[0].split('?')[0];
     return base + '?alta=' + b64(JSON.stringify({ d, s: sello(d) }));
   }
   // Se ejecuta al abrir el panel: si la dirección trae «?alta=…», da de alta a esa persona en este navegador
   function aplicarInvitacion() {
+    if (N()) return null;
     let codigo = null;
     try { codigo = new URLSearchParams(location.search).get('alta'); } catch (e) { return null; }
     if (!codigo) return null;
@@ -248,6 +277,6 @@ Alki.panel = Alki.panel || {};
   Alki.panel.equipo = {
     secciones, seccionesConPermiso, soloEncargado, perfiles, asegurar, buscarPorEmail, miembro, comprobarClave, crearClave,
     sesion, entrar, salir, permiso, crearTrabajador, actualizarTrabajador, cambiarPermiso, aplicarPerfil, restablecerClave,
-    registrar, instalarRegistro, enlaceInvitacion, aplicarInvitacion
+    registrar, instalarRegistro, eliminarTrabajador, enlaceInvitacion, aplicarInvitacion
   };
 })();

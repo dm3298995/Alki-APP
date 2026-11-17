@@ -18,5 +18,10 @@ Alki.config = {
   //  · umami: id = el «website ID» de Umami (sin cookies, no hace falta permiso).
   //  · cloudflare: id = el «token» de Cloudflare Web Analytics (sin cookies).
   // Mientras id esté vacío no se mide nada.
-  analitica: { proveedor: 'ga4', id: '' }
+  analitica: { proveedor: 'ga4', id: '' },
+
+  // Firebase: datos compartidos del panel del equipo. Mientras esté vacío, cada
+  // móvil guarda su propia copia (modo demostración). Se rellena con los datos
+  // de «Configuración del proyecto → Tus apps → Web» en console.firebase.google.com
+  firebase: { apiKey: '', authDomain: '', projectId: '', appId: '' }
 };
