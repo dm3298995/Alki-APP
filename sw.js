@@ -4,7 +4,7 @@
    conexión. Solo se activa cuando la app se sirve por http/https
    (por ejemplo en GitHub Pages o Netlify), no al abrir el archivo a mano.
    ========================================================================== */
-const CACHE = 'alki-app-v13';
+const CACHE = 'alki-app-v14';
 const ARCHIVOS = [
   './', './index.html', './manifest.json', './css/styles.css',
   './js/config.js', './js/medicion.js', './js/data.js', './js/store.js', './js/ui.js', './js/app.js',

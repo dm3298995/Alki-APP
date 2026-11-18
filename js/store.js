@@ -100,11 +100,20 @@ Alki.store = (function () {
   /* ---------------- Sesión (quién ha iniciado sesión) ---------------- */
   function sesion() {
     // Con Firebase, la sesión solo vale cuando ya están descargados los datos de esa persona
-    if (Alki.nube && Alki.nube.activa && Alki.nube.modo() === 'portal' && (!Alki.nube.listo() || !Alki.nube.usuario())) return null;
+    const enNube = Alki.nube && Alki.nube.activa && Alki.nube.modo() === 'portal';
+    if (enNube && (!Alki.nube.listo() || !Alki.nube.usuario())) return null;
+    let s = null;
     try {
-      const s = localStorage.getItem(CLAVE_SESION);
-      return s ? JSON.parse(s) : sesionEnMemoria;
-    } catch (e) { return sesionEnMemoria; }
+      const t = localStorage.getItem(CLAVE_SESION);
+      s = t ? JSON.parse(t) : sesionEnMemoria;
+    } catch (e) { s = sesionEnMemoria; }
+    // Una sesión guardada de otra cuenta (o de los datos de prueba) no vale con la cuenta conectada
+    if (s && enNube && (normEmail(s.email) !== normEmail(Alki.nube.usuario().email) || !usuarioDe(s.rol, s.refId))) {
+      sesionEnMemoria = null;
+      try { localStorage.removeItem(CLAVE_SESION); } catch (e) { /* nada */ }
+      return null;
+    }
+    return s;
   }
   /* ---------- Contraseñas ----------
      Nunca se guarda la contraseña tal cual: se guarda su "huella" (hash SHA-256).
