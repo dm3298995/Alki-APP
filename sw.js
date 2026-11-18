@@ -4,7 +4,7 @@
    conexión. Solo se activa cuando la app se sirve por http/https
    (por ejemplo en GitHub Pages o Netlify), no al abrir el archivo a mano.
    ========================================================================== */
-const CACHE = 'alki-app-v14';
+const CACHE = 'alki-app-v15';
 const ARCHIVOS = [
   './', './index.html', './manifest.json', './css/styles.css',
   './js/config.js', './js/medicion.js', './js/data.js', './js/store.js', './js/ui.js', './js/app.js',
@@ -33,8 +33,10 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname.endsWith('/reparar.html')) return; // la página de reparación siempre va directa
+  // Siempre se pregunta al servidor si hay una versión nueva (sin usar la copia de 10 minutos del navegador)
+  const pedido = e.request.mode === 'navigate' ? e.request : new Request(e.request, { cache: 'no-cache' });
   e.respondWith(
-    fetch(e.request)
+    fetch(pedido)
       .then((r) => {
         if (r.ok && !r.redirected && r.type === 'basic') { const copia = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copia)); }
         return r;
