@@ -201,7 +201,32 @@ Alki.app = (function () {
 
   window.addEventListener('hashchange', () => { rutaActual = hashDelNavegador(); render(); });
   window.addEventListener('popstate', () => { rutaActual = hashDelNavegador(); render(); });
-  document.addEventListener('DOMContentLoaded', () => render());
+  document.addEventListener('DOMContentLoaded', function () {
+    // Con Firebase: primero se recupera la cuenta abierta en este móvil y se descargan sus datos
+    const N = Alki.nube;
+    if (N && N.activa) {
+      N.usarPortal();
+      document.getElementById('app').innerHTML = '<div class="entrada"><div class="entrada__caja"><div class="entrada__logo logo logo--grande">' + Alki.marca + '</div><p class="entrada__texto" style="text-align:center">Conectando…</p></div></div>';
+      N.iniciar().then(function (u) {
+        if (!u || !u.emailVerified) { rutaActual = '/login'; return render(); }
+        return N.perfilAcceso().then(function (acc) {
+          if (!acc) { rutaActual = '/login'; return render(); }
+          return N.conectarPortal({ alCambiar: () => render(true) }).then(function () {
+            // Si ya había entrado antes con este correo, va directo a su inicio
+            const s = S.sesion();
+            if (!s || String(s.email || '').toLowerCase() !== u.email.toLowerCase()) rutaActual = '/login';
+            render();
+          });
+        });
+      }).catch(function (e) {
+        console.error(e);
+        const t = document.querySelector('#app .entrada__texto');
+        if (t) t.textContent = 'No se ha podido conectar. Revisa tu conexión y vuelve a abrir la app.';
+      });
+      return;
+    }
+    render();
+  });
 
   // PWA: permite instalar la app y usarla sin conexión (solo funciona en http/https)
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {

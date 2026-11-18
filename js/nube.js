@@ -37,6 +37,9 @@ Alki.nube = (function () {
   let espejo = {};              // lo último que hay en la nube: lista → Map(clave → { j, o })
   let espejoEquipo = new Map(); // correo → JSON
   let espejoAjustes = null;
+  let espejoAcceso = new Map(); // correo → JSON de su ficha de acceso a la app
+  let modo = 'equipo';          // 'equipo' (panel) | 'portal' (app de inquilinos y propietarios)
+  const R = () => Alki.nubeReparto;
   let escuchas = [];
   let temporizador = null;
   let subiendo = Promise.resolve();
@@ -94,7 +97,7 @@ Alki.nube = (function () {
 
   /* ---------- Cuenta ---------- */
   function entrar(email, clave) {
-    return iniciar().then(() => auth.signInWithEmailAndPassword(email.trim(), clave)).then((r) => { usuario = r.user; return r.user; });
+    return iniciar().then(() => auth.signInWithEmailAndPassword(email.trim(), clave)).then((r) => { usuario = r.user; return recargarUsuario(); });
   }
   function crearCuenta(email, clave) {
     return iniciar().then(() => auth.createUserWithEmailAndPassword(email.trim(), clave)).then(function (r) {
@@ -103,11 +106,19 @@ Alki.nube = (function () {
     });
   }
   function reenviarVerificacion() { return usuario ? usuario.sendEmailVerification() : Promise.resolve(); }
-  function recargarUsuario() { return usuario ? usuario.reload().then(() => { usuario = auth.currentUser; return usuario; }) : Promise.resolve(null); }
+  // Tras confirmar el correo hay que pedir un permiso nuevo a Firebase: el anterior aún dice «sin confirmar»
+  function recargarUsuario() {
+    if (!usuario) return Promise.resolve(null);
+    return usuario.reload().then(function () {
+      usuario = auth.currentUser;
+      return usuario && usuario.emailVerified && usuario.getIdToken ? usuario.getIdToken(true).then(() => usuario) : usuario;
+    });
+  }
   function olvido(email) { return iniciar().then(() => auth.sendPasswordResetEmail(email.trim())); }
   function salir() {
     escuchas.forEach((f) => { try { f(); } catch (e) { /* nada */ } });
-    escuchas = []; listo = false; espejo = {}; espejoEquipo = new Map(); espejoAjustes = null; estado = 'sin-conexion';
+    escuchas = []; listo = false; espejo = {}; espejoEquipo = new Map(); espejoAjustes = null; espejoAcceso = new Map(); estado = 'sin-conexion';
+    baseApp = {}; pendientesApp = []; vistaApp = {}; colaBuzon = [];
     return auth ? auth.signOut().then(() => { usuario = null; }) : Promise.resolve();
   }
 
@@ -143,7 +154,7 @@ Alki.nube = (function () {
   /* ---------- Claves y orden de los registros ---------- */
   function hash(texto) { let h = 5381; for (let i = 0; i < texto.length; i++) h = ((h << 5) + h + texto.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
   function claveDe(r) {
-    const k = r && (r.id || (r.email ? 'u:' + r.email : null)) || 'h:' + hash(JSON.stringify(r));
+    const k = r && (r.id || (r.email ? 'u:' + String(r.email).toLowerCase() + ':' + (r.rol || '') + ':' + (r.refId || '') : null)) || 'h:' + hash(JSON.stringify(r));
     return String(k).replace(/\//g, '∕').slice(0, 700);
   }
   const listas = (db) => Object.keys(db).filter((k) => Array.isArray(db[k]) && !ESPECIALES.includes(k));
@@ -155,6 +166,7 @@ Alki.nube = (function () {
     const db = Alki.store.db;
     const ops = [];
     const ahora = Date.now();
+    const ctx = R() ? R().contexto(db) : null;
     listas(db).forEach(function (lista) {
       const mapa = espejo[lista] || (espejo[lista] = new Map());
       const vistos = new Set();
@@ -163,14 +175,17 @@ Alki.nube = (function () {
         const k = claveDe(r);
         if (vistos.has(k)) return; // duplicado exacto: se guarda una vez
         vistos.add(k);
-        const j = JSON.stringify(r);
+        // Lo que se sube y quién puede leerlo (inquilinos y propietarios, ver nube-reparto.js)
+        const j = JSON.stringify(ctx ? R().paraSubir(lista, r, ctx, db) : r);
+        const e = ctx ? R().visibles(lista, r, ctx).slice().sort() : [];
+        const ej = e.join(',');
         const antes = mapa.get(k);
-        if (antes && antes.j === j) return;
+        if (antes && antes.j === j && antes.ej === ej) return;
         if (j.length > LIMITE_DOC) { console.warn('Registro demasiado grande para la nube:', lista, k); return; }
         // El orden se fija al crear el registro y no cambia después
         const o = antes ? antes.o : (mapa.size === 0 && !espejoAjustes ? (inicio ? -i : i) : (inicio ? -(ahora * 1000 + i) : ahora * 1000 + i));
-        mapa.set(k, { j, o });
-        ops.push({ tipo: 'set', ref: fs.collection('d_' + lista).doc(k), datos: { j, o } });
+        mapa.set(k, { j, o, ej });
+        ops.push({ tipo: 'set', ref: fs.collection('d_' + lista).doc(k), datos: { j, o, e } });
       });
       Array.from(mapa.keys()).forEach(function (k) {
         if (!vistos.has(k)) { mapa.delete(k); ops.push({ tipo: 'del', ref: fs.collection('d_' + lista).doc(k) }); }
@@ -179,6 +194,19 @@ Alki.nube = (function () {
     // Datos sueltos (origen, fecha de importación…)
     const s = JSON.stringify(sueltos(db));
     if (s !== espejoAjustes) { espejoAjustes = s; ops.push({ tipo: 'set', ref: fs.collection('d_ajustes').doc('general'), datos: { j: s, o: 0 } }); }
+    // Quién puede entrar en la app de inquilinos y propietarios
+    if (ctx) {
+      const quiero = R().accesos(db);
+      quiero.forEach(function (a, email) {
+        const j = JSON.stringify(a);
+        if (espejoAcceso.get(email) === j) return;
+        espejoAcceso.set(email, j);
+        ops.push({ tipo: 'set', ref: fs.collection('acceso').doc(email), datos: a });
+      });
+      Array.from(espejoAcceso.keys()).forEach(function (email) {
+        if (!quiero.has(email)) { espejoAcceso.delete(email); ops.push({ tipo: 'del', ref: fs.collection('acceso').doc(email) }); }
+      });
+    }
     // El equipo solo lo puede cambiar el encargado
     const yo = (db.equipo || []).find((m) => (m.email || '').toLowerCase() === correo());
     if (yo && yo.superadmin) {
@@ -218,6 +246,7 @@ Alki.nube = (function () {
   function subirYa() {
     clearTimeout(temporizador); temporizador = null;
     if (!listo || !fs) return subiendo;
+    if (modo === 'portal') return enviarAlBuzon();
     const ops = prepararCambios();
     subiendo = subiendo.then(() => escribir(ops));
     return subiendo;
@@ -286,7 +315,7 @@ Alki.nube = (function () {
     const db = Alki.store.db;
     // Listas que puede haber en la nube aunque este móvil no las tenga todavía
     const nombres = Array.from(new Set(listas(db).concat(['propietarios', 'viviendas', 'habitaciones', 'inquilinos', 'contratos', 'pagos', 'usuarios', 'avisosDatos', 'incidencias', 'reformas', 'avisos', 'referidos', 'mensajes', 'solicitudes', 'documentos', 'social', 'actividad', 'costes'])));
-    let pendientes = nombres.length + 2;
+    let pendientes = nombres.length + 3;
     let terminado;
     const primeraCarga = new Promise((ok) => { terminado = ok; });
     const unoMenos = () => { if (--pendientes === 0) terminado(); };
@@ -304,7 +333,8 @@ Alki.nube = (function () {
           if (c.type === 'removed') { if (espejo[lista].delete(k)) cambio = true; return; }
           const d = c.doc.data();
           const antes = espejo[lista].get(k);
-          if (!antes || antes.j !== d.j) { espejo[lista].set(k, { j: d.j, o: d.o || 0 }); cambio = true; }
+          const ej = (d.e || []).slice().sort().join(',');
+          if (!antes || antes.j !== d.j || antes.ej !== ej) { espejo[lista].set(k, { j: d.j, o: d.o || 0, ej }); cambio = (cambio || !antes || antes.j !== d.j); }
         });
         if (primera) { primera = false; unoMenos(); }
         if (cambio && listo) { reconstruir(lista); avisarCambio(); }
@@ -328,6 +358,20 @@ Alki.nube = (function () {
         avisarCambio();
       }
     }, function (e) { if (primeraEq) { primeraEq = false; fallo(e); } else errorEscucha(e); }));
+    // Fichas de acceso a la app (para no reescribirlas cada vez)
+    let primeraAcc = true;
+    escuchas.push(fs.collection('acceso').onSnapshot(function (snap) {
+      snap.docChanges().forEach(function (c) {
+        if (c.doc.metadata.hasPendingWrites) return;
+        if (c.type === 'removed') espejoAcceso.delete(c.doc.id); else espejoAcceso.set(c.doc.id, JSON.stringify(c.doc.data()));
+      });
+      if (primeraAcc) { primeraAcc = false; unoMenos(); }
+    }, function (e) { if (primeraAcc) { primeraAcc = false; fallo(e); } else errorEscucha(e); }));
+    // Buzón: lo que mandan inquilinos y propietarios desde la app. Se revisa, se aplica y se borra.
+    escuchas.push(fs.collection('buzon').onSnapshot(function (snap) {
+      snap.docChanges().forEach(function (c) { if (c.type === 'added') colaBuzon.push(c.doc); });
+      procesarBuzon();
+    }, errorEscucha));
     let primeraAj = true;
     escuchas.push(fs.collection('d_ajustes').doc('general').onSnapshot(function (d) {
       const j = d.exists ? d.data().j : null;
@@ -357,9 +401,154 @@ Alki.nube = (function () {
       reconstruirEquipo();
       listo = true; estado = 'conectado';
       Alki.store.guardarLocal();
+      procesarBuzon();
+      // Primera vez con el reparto: se añaden los permisos de lectura a lo que ya estaba subido
+      subirYa();
       return 'descargado';
     });
   }
+  /* ---------- Buzón (lado del equipo) ---------- */
+  let colaBuzon = [];
+  let procesando = false;
+  function procesarBuzon() {
+    if (!listo || procesando || !colaBuzon.length || !R()) return;
+    procesando = true;
+    const lote = colaBuzon; colaBuzon = [];
+    let cambios = 0;
+    const borrar = [];
+    lote.forEach(function (doc) {
+      try {
+        const r = R().aplicarBuzon(doc.data(), Alki.store.db, claveDe);
+        cambios += r.aplicados;
+        if (r.rechazados.length) console.warn('Buzón: cambios rechazados de', doc.data().e, r.rechazados);
+      } catch (e) { console.error('Buzón: no se pudo aplicar', e); }
+      borrar.push(doc.ref);
+    });
+    const fin = function () { procesando = false; if (colaBuzon.length) procesarBuzon(); };
+    (cambios ? (Alki.store.guardarLocal(), subirYa()) : Promise.resolve())
+      .then(() => Promise.all(borrar.map((ref) => ref.delete().catch(() => null))))
+      .then(function () { if (cambios) avisarCambio(); fin(); }, fin);
+  }
+
+  /* ==========================================================================
+     MODO APP (inquilinos y propietarios)
+     Cada persona solo descarga los registros donde aparece su correo y los
+     avisos o publicaciones para toda la comunidad. Lo que cambia va al buzón.
+     ========================================================================== */
+  const LISTAS_APP = ['usuarios', 'inquilinos', 'propietarios', 'viviendas', 'habitaciones', 'contratos', 'pagos', 'incidencias', 'avisos', 'reformas', 'documentos', 'referidos', 'solicitudes', 'mensajes', 'social'];
+  const PARA_TODOS = ['avisos', 'social'];
+  let baseApp = {};        // lista → Map(clave → { j, o }) tal como está en la nube
+  let pendientesApp = [];  // envíos al buzón que el equipo aún no ha aplicado
+  let vistaApp = {};       // lista → Map(clave → j) de lo que se está enseñando
+  function usarPortal() { modo = 'portal'; }
+  function perfilAcceso() {
+    return fs.collection('acceso').doc(correo()).get().then((d) => (d.exists ? d.data() : null));
+  }
+  function reconstruirApp() {
+    const db = Alki.store.db;
+    const ordenados = {};
+    LISTAS_APP.forEach(function (lista) {
+      const mapa = new Map(baseApp[lista] || []);
+      ordenados[lista] = mapa;
+    });
+    // Lo pendiente se enseña encima, para que la persona vea al momento lo que ha hecho
+    pendientesApp.forEach(function (envio, n) {
+      (envio.cambios || []).forEach(function (c) {
+        const mapa = ordenados[c.lista];
+        if (!mapa) return;
+        if (!c.j) mapa.delete(c.k);
+        else mapa.set(c.k, { j: c.j, o: (mapa.get(c.k) || {}).o != null ? mapa.get(c.k).o : (AL_PRINCIPIO.includes(c.lista) ? -1e18 - n : 1e18 + n) });
+      });
+    });
+    vistaApp = {};
+    LISTAS_APP.forEach(function (lista) {
+      const valores = Array.from(ordenados[lista].entries()).sort((a, b) => a[1].o - b[1].o);
+      vistaApp[lista] = new Map(valores.map(([k, v]) => [k, v.j]));
+      db[lista] = valores.map(([, v]) => { try { return JSON.parse(v.j); } catch (e) { return null; } }).filter(Boolean);
+    });
+    ['costes', 'actividad', 'avisosDatos', 'equipo'].forEach((k) => { db[k] = []; });
+    db.parcial = true;
+  }
+  function conectarPortal(opciones) {
+    opciones = opciones || {};
+    alCambiar = opciones.alCambiar || alCambiar;
+    modo = 'portal'; estado = 'conectando';
+    const yo = correo();
+    const consultas = [];
+    LISTAS_APP.forEach(function (lista) {
+      consultas.push({ lista, valor: yo });
+      if (PARA_TODOS.includes(lista)) consultas.push({ lista, valor: R ? '*' : '*' });
+    });
+    const porConsulta = {};
+    let pendientes = consultas.length + 1;
+    let terminado;
+    const primeraCarga = new Promise((ok) => { terminado = ok; });
+    const unoMenos = () => { if (--pendientes === 0) terminado(); };
+    const fallo = (e) => { estado = 'error'; ultimoError = traducir(e); console.error(e); terminado(); };
+    const juntar = function (lista) {
+      const m = new Map();
+      consultas.forEach((q, n) => { if (q.lista === lista && porConsulta[n]) porConsulta[n].forEach((v, k) => m.set(k, v)); });
+      baseApp[lista] = m;
+    };
+    consultas.forEach(function (q, n) {
+      let primera = true;
+      porConsulta[n] = new Map();
+      escuchas.push(fs.collection('d_' + q.lista).where('e', 'array-contains', q.valor).onSnapshot(function (snap) {
+        snap.docChanges().forEach(function (c) {
+          if (c.type === 'removed') porConsulta[n].delete(c.doc.id);
+          else { const d = c.doc.data(); porConsulta[n].set(c.doc.id, { j: d.j, o: d.o || 0 }); }
+        });
+        juntar(q.lista);
+        if (primera) { primera = false; unoMenos(); return; }
+        if (listo) { reconstruirApp(); avisarCambio(); }
+      }, function (e) { if (primera) { primera = false; fallo(e); } else errorEscucha(e); }));
+    });
+    let primeraB = true;
+    escuchas.push(fs.collection('buzon').where('e', '==', yo).onSnapshot(function (snap) {
+      pendientesApp = snap.docs.map((d) => d.data()).sort((a, b) => (a.fecha < b.fecha ? -1 : 1));
+      if (primeraB) { primeraB = false; unoMenos(); return; }
+      if (listo) { reconstruirApp(); avisarCambio(); }
+    }, function (e) { if (primeraB) { primeraB = false; fallo(e); } else errorEscucha(e); }));
+
+    return primeraCarga.then(function () {
+      if (estado === 'error') throw new Error(ultimoError);
+      reconstruirApp();
+      listo = true; estado = 'conectado';
+      return 'descargado';
+    });
+  }
+  // Compara lo que hay en pantalla con lo último enseñado y manda las diferencias al buzón
+  function enviarAlBuzon() {
+    const db = Alki.store.db;
+    const cambios = [];
+    LISTAS_APP.forEach(function (lista) {
+      const antes = vistaApp[lista] || new Map();
+      const vistos = new Set();
+      (db[lista] || []).forEach(function (r) {
+        const k = claveDe(r);
+        vistos.add(k);
+        const j = JSON.stringify(r);
+        if (antes.get(k) !== j) cambios.push({ lista, k, j });
+      });
+      antes.forEach(function (j, k) { if (!vistos.has(k)) cambios.push({ lista, k, j: null }); });
+    });
+    if (!cambios.length) return subiendo;
+    const envio = { e: correo(), fecha: new Date().toISOString(), cambios };
+    if (JSON.stringify(envio).length > LIMITE_DOC) {
+      if (Alki.ui && Alki.ui.toast) Alki.ui.toast('Es demasiado grande para enviarlo (máximo 900 KB).');
+      reconstruirApp(); if (alCambiar) alCambiar();
+      return subiendo;
+    }
+    pendientesApp.push(envio);
+    reconstruirApp();
+    subiendo = subiendo.then(() => fs.collection('buzon').add(envio)).catch(function (e) {
+      estado = 'error'; ultimoError = traducir(e);
+      console.error('No se pudo enviar al buzón', e);
+      if (Alki.ui && Alki.ui.toast) Alki.ui.toast('No se ha podido enviar: ' + ultimoError);
+    });
+    return subiendo;
+  }
+
   function subirYaSincrono() {
     // Antes de aplicar un cambio de otra persona, se envían los nuestros pendientes
     if (temporizador) subirYa();
@@ -368,6 +557,7 @@ Alki.nube = (function () {
   return {
     activa, iniciar, entrar, crearCuenta, reenviarVerificacion, recargarUsuario, olvido, salir,
     fichaEquipo, hayEncargado, crearEncargado, aceptarConfidencialidad, conectar, alGuardar, subirYa,
+    usarPortal, perfilAcceso, conectarPortal, modo: () => modo,
     usuario: () => usuario, correo, listo: () => listo, estado: () => estado, error: () => ultimoError, traducir
   };
 })();

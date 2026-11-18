@@ -28,6 +28,8 @@ Alki.store = (function () {
     return ok || !!(Alki.nube && Alki.nube.listo && Alki.nube.listo());
   }
   function guardarLocal() {
+    // En la app conectada a Firebase cada persona solo tiene sus datos: no se mezclan con la copia del panel
+    if (Alki.nube && Alki.nube.modo && Alki.nube.modo() === 'portal') return true;
     try {
       localStorage.setItem(CLAVE_DATOS, JSON.stringify(db));
       return true;
@@ -97,6 +99,8 @@ Alki.store = (function () {
 
   /* ---------------- Sesión (quién ha iniciado sesión) ---------------- */
   function sesion() {
+    // Con Firebase, la sesión solo vale cuando ya están descargados los datos de esa persona
+    if (Alki.nube && Alki.nube.activa && Alki.nube.modo() === 'portal' && (!Alki.nube.listo() || !Alki.nube.usuario())) return null;
     try {
       const s = localStorage.getItem(CLAVE_SESION);
       return s ? JSON.parse(s) : sesionEnMemoria;
@@ -135,6 +139,15 @@ Alki.store = (function () {
 
   /* ---------------- RGPD: consentimiento para ALKI Social ---------------- */
   const consentimientoDe = (ses) => { const u = usuarioDe(ses.rol, ses.refId); return (u && u.consentimiento) || null; };
+  // Primer acceso con Firebase: la persona acepta la privacidad y los términos (y, si quiere, ALKI Social)
+  function aceptarCondiciones(ses, opciones) {
+    const u = usuarioDe(ses.rol, ses.refId);
+    if (!u) return;
+    const ahora = new Date().toISOString();
+    const social = !!(opciones && opciones.social);
+    u.consentimiento = Object.assign({}, u.consentimiento || {}, { version: Alki.legal ? Alki.legal.version : '1', privacidad: ahora, terminos: ahora, social, socialFecha: social ? ahora : null });
+    guardar();
+  }
   const enSocial = (ses) => ses.rol === 'admin' || !!(consentimientoDe(ses) || {}).social;
   function unirseSocial(ses, si) {
     const u = usuarioDe(ses.rol, ses.refId);
@@ -180,6 +193,7 @@ Alki.store = (function () {
   function cerrarSesion() {
     sesionEnMemoria = null;
     try { localStorage.removeItem(CLAVE_SESION); } catch (e) { /* nada */ }
+    if (Alki.nube && Alki.nube.activa && Alki.nube.modo() === 'portal') Alki.nube.salir();
   }
 
   /* ---------------- Consultas básicas ---------------- */
@@ -201,7 +215,9 @@ Alki.store = (function () {
   // 'ocupada' | 'libre' | 'reforma'
   function estadoHabitacion(h) {
     if (h.enReforma) return 'reforma';
-    return contratoDeHabitacion(h.id) ? 'ocupada' : 'libre';
+    if (contratoDeHabitacion(h.id)) return 'ocupada';
+    // En la app conectada no se descargan los contratos de los compañeros: el panel deja el estado calculado
+    return db.parcial && h.estadoPublico ? h.estadoPublico : 'libre';
   }
 
   // Estado de un recibo: 'pagado' | 'revision' | 'vencido' | 'pendiente'
@@ -488,7 +504,7 @@ Alki.store = (function () {
   return {
     get db() { return db; },
     guardar, guardarLocal, reiniciar, sesion, entrarComo, cerrarSesion, usuariosPorEmail, usuarioDe, comprobarContrasena, crearContrasena,
-    consentimientoDe, enSocial, unirseSocial, confirmacionDe, necesitaConfirmar, confirmarDatos, estadoConfirmacion,
+    consentimientoDe, aceptarCondiciones, enSocial, unirseSocial, confirmacionDe, necesitaConfirmar, confirmarDatos, estadoConfirmacion,
     buscar, habitacionesDe, viviendasDe, contratoDeHabitacion, contratoDeInquilino, inquilinoDeHabitacion,
     estadoHabitacion, estadoPago, contratosDeHabitacion, esTitular, actualizarVivienda, importarCSV, exportarCopia, importarCopia, pagosDeContrato, pagosDeInquilino, deudaDeInquilino,
     incidenciasDeVivienda, incidenciasDeInquilino, incidenciaAbierta, avisosPara, reformasDe,

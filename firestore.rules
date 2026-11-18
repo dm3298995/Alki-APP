@@ -9,6 +9,7 @@ rules_version = '2';
 // · Solo el encargado puede dar de alta, cambiar o eliminar a gente del equipo.
 // · El primer correo que activa una base de datos vacía se queda como encargado
 //   (eso solo puede pasar una vez).
+// · Inquilinos y propietarios solo leen lo suyo y lo que cambian pasa por el buzón.
 // ==========================================================================
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -27,6 +28,10 @@ service cloud.firestore {
     }
     function encargado() {
       return miembro() && get(rutaFicha()).data.superadmin == true;
+    }
+    // Inquilino o propietario con acceso a la app (lo da de alta el panel)
+    function residente() {
+      return conectado() && exists(/databases/$(database)/documents/acceso/$(correo()));
     }
 
     // Quién es el encargado: se fija la primera vez y ya no se puede cambiar
@@ -64,9 +69,29 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['confidencialidad']);
     }
 
+    // Quién puede entrar en la app de inquilinos y propietarios (lo escribe el panel)
+    match /acceso/{email} {
+      allow read: if miembro() || (conectado() && email == correo());
+      allow write: if miembro();
+    }
+
+    // Buzón: lo que mandan inquilinos y propietarios desde la app.
+    // Lo revisa y lo aplica el panel; ellos nunca escriben directamente en los datos.
+    match /buzon/{id} {
+      allow create: if residente()
+        && request.resource.data.e == correo()
+        && request.resource.data.cambios is list;
+      allow read: if miembro() || (conectado() && resource.data.e == correo());
+      allow delete: if miembro();
+    }
+
     // Datos del panel: viviendas, contratos, cobros, incidencias, gastos…
+    // El equipo lo ve todo. Cada residente solo lee los registros donde aparece
+    // su correo («*» = avisos y publicaciones para toda la comunidad).
     match /{lista}/{id} {
       allow read, write: if miembro() && lista.matches('d_.*');
+      allow read: if residente() && lista.matches('d_.*')
+        && (correo() in resource.data.e || '*' in resource.data.e);
     }
   }
 }

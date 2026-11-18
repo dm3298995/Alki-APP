@@ -24,9 +24,11 @@ Alki.vistas = Alki.vistas || {};
     return c ? S.buscar('viviendas', S.buscar('habitaciones', c.habitacionId).viviendaId) : null;
   }
   // Nombre que se muestra: "Lucía N. · Eix50" (sin apellidos completos, por privacidad)
-  function autor(rol, id) {
+  function autor(rol, id, obj) {
     if (rol === 'admin') return { nombre: 'Equipo ALKI', detalle: 'ALKI Rentals', iniciales: '', alki: true };
     const i = S.buscar('inquilinos', id);
+    // En la app conectada no se descargan los datos de los demás: el panel deja su tarjeta pública
+    if (obj && obj.autorTarjeta && (!i || S.db.parcial)) return obj.autorTarjeta;
     if (!i) return { nombre: 'Antiguo residente', detalle: '', iniciales: '·' };
     const partes = i.nombre.split(' ');
     const c = S.contratoDeInquilino(i.id);
@@ -40,7 +42,7 @@ Alki.vistas = Alki.vistas || {};
   const avatar = (a) => a.alki ? '<span class="avatar avatar--alki" aria-hidden="true">' + Alki.logoSimbolo + '</span>' : '<span class="avatar" aria-hidden="true">' + esc(a.iniciales) + '</span>';
 
   function tarjeta(p, ses) {
-    const a = autor(p.autorRol, p.autorId);
+    const a = autor(p.autorRol, p.autorId, p);
     const mio = p.autorRol === ses.rol && p.autorId === ses.refId;
     const puedeBorrar = mio || ses.rol === 'admin';
     const gusta = p.likes.includes(S.claveAutor(ses));
@@ -55,7 +57,7 @@ Alki.vistas = Alki.vistas || {};
         (puedeBorrar ? '<button class="post__accion post__borrar" type="button" data-borrar aria-label="Borrar publicación">' + ic('papelera') + '</button>' : '') +
       '</div>' +
       '<div class="comentarios">' + p.comentarios.map(function (c) {
-        const ac = autor(c.autorRol, c.autorId);
+        const ac = autor(c.autorRol, c.autorId, c);
         const borrable = (c.autorRol === ses.rol && c.autorId === ses.refId) || ses.rol === 'admin';
         return '<div class="comentario"><strong>' + esc(ac.nombre) + '</strong> ' + esc(c.texto) +
           '<div class="comentario__pie"><span>' + U.haceTiempo(c.fecha) + '</span>' + (borrable ? '<button type="button" data-borrar-com="' + c.id + '">Borrar</button>' : '') + '</div></div>';
@@ -71,7 +73,7 @@ Alki.vistas = Alki.vistas || {};
     const f = q.f || 'todos';
     let posts = (S.db.social || []).slice().sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
     if (ses.rol === 'inquilino') posts = posts.filter((x) => !x.viviendaId || (casa && x.viviendaId === casa.id));
-    if (f === 'casa' && casa) posts = posts.filter((x) => x.viviendaId === casa.id || (x.autorRol === 'inquilino' && autor('inquilino', x.autorId).detalle.indexOf(casa.codigo) === 0));
+    if (f === 'casa' && casa) posts = posts.filter((x) => x.viviendaId === casa.id || (x.autorRol === 'inquilino' && autor('inquilino', x.autorId, x).detalle.indexOf(casa.codigo) === 0));
     const base = ses.rol === 'admin' ? '/admin/social' : '/inquilino/social';
     const opcionesPara = ses.rol === 'admin'
       ? '<option value="">Toda la comunidad</option>' + S.db.viviendas.map((v) => '<option value="' + v.id + '">Solo ' + esc(v.codigo) + '</option>').join('')
