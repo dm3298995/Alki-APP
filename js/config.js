@@ -23,5 +23,5 @@ Alki.config = {
   // Firebase: datos compartidos del panel del equipo. Mientras esté vacío, cada
   // móvil guarda su propia copia (modo demostración). Se rellena con los datos
   // de «Configuración del proyecto → Tus apps → Web» en console.firebase.google.com
-  firebase: { apiKey: '', authDomain: '', projectId: '', appId: '' }
+  firebase: { apiKey: 'AIzaSyBeQALOHfmJbMBdSDZITuH430AF5AV2MOI', authDomain: 'alki-app-1bd26.firebaseapp.com', projectId: 'alki-app-1bd26', appId: '1:459664611165:web:295ec4486e12227bfd3ab4' }
 };
