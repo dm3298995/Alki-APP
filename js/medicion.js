@@ -81,7 +81,7 @@
   const panelReal = zona === 'panel' && Alki.nube && Alki.nube.activa;
   if (cfg.modoPrueba && !panelReal) {
     const franja = el('div', { className: 'franja-prueba' });
-    franja.append(el('span', {}, zona === 'panel' ? 'Panel de demostración · datos ficticios' : 'Versión de prueba · datos ficticios'));
+    franja.append(el('span', {}, Alki.nube && Alki.nube.activa ? 'Versión de prueba' : zona === 'panel' ? 'Panel de demostración · datos ficticios' : 'Versión de prueba · datos ficticios'));
     const b = el('button', { type: 'button' }, 'Tu opinión');
     b.onclick = abrirOpinion;
     franja.append(b);
